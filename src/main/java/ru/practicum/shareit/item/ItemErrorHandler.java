@@ -14,18 +14,18 @@ public class ItemErrorHandler {
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public Map<String, String> handleIllegalArgumentException(final IllegalArgumentException e) {
-        return Map.of("error", "IllegalArgumentException", "errorMessage", e.getMessage() != null ? e.getMessage(): "");
+        return Map.of("error", "IllegalArgumentException", "errorMessage", e.getMessage() != null ? e.getMessage() : "");
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public Map<String, String> handleUserNotFoundException(final UserNotFoundException e) {
-        return Map.of("error", "UserNotFoundException", "errorMessage", e.getMessage() != null ? e.getMessage(): "");
+        return Map.of("error", "UserNotFoundException", "errorMessage", e.getMessage() != null ? e.getMessage() : "");
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Map<String, String> handleEmptyHeaderException(final EmptyHeaderException e) {
-        return Map.of("error", "EmptyHeaderException", "errorMessage", e.getMessage() != null ? e.getMessage(): "");
+        return Map.of("error", "EmptyHeaderException", "errorMessage", e.getMessage() != null ? e.getMessage() : "");
     }
 }
