@@ -12,6 +12,6 @@ public class UserErrorHandler {
     @ExceptionHandler
     @ResponseStatus(HttpStatus.CONFLICT)
     public Map<String, String> handleIllegalArgumentException(final IllegalArgumentException e) {
-        return Map.of("error", "IllegalArgumentException", "errorMessage", e.getMessage() != null ? e.getMessage(): "");
+        return Map.of("error", "IllegalArgumentException", "errorMessage", e.getMessage() != null ? e.getMessage() : "");
     }
 }

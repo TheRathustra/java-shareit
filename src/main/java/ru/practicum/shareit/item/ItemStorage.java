@@ -9,9 +9,14 @@ import java.util.List;
 public interface ItemStorage {
 
     Item add(User user, ItemDto itemDto);
+
     Item update(User user, long id, ItemDto itemDto);
+
     void delete(long id);
+
     Item getItemById(long id);
+
     List<Item> getItems(User owner);
+
     List<Item> findItemsByText(String text);
 }
