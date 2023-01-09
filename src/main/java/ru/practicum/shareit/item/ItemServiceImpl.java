@@ -22,7 +22,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public Item add(Long userId, ItemDto itemDto) {
+    public ItemDto add(Long userId, ItemDto itemDto) {
         User user = userService.getUserById(userId);
         return itemStorage.add(user, itemDto);
     }

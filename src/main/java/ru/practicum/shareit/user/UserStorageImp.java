@@ -33,7 +33,7 @@ public class UserStorageImp implements UserStorage {
     }
 
     @Override
-    public User add(UserDto userDto) {
+    public UserDto add(UserDto userDto) {
         emailIsDuplicate(userDto);
 
         User user = new User();
@@ -42,8 +42,9 @@ public class UserStorageImp implements UserStorage {
         user.setId(id);
         users.put(id, user);
 
+        userDto.setId(id);
         id++;
-        return user;
+        return userDto;
     }
 
     @Override

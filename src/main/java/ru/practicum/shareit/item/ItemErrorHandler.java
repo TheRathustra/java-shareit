@@ -9,13 +9,8 @@ import ru.practicum.shareit.item.error.UserNotFoundException;
 
 import java.util.Map;
 
-@RestControllerAdvice(assignableTypes = {ItemController.class})
+@RestControllerAdvice(assignableTypes = {ItemController.class, ItemServiceImpl.class})
 public class ItemErrorHandler {
-    @ExceptionHandler
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public Map<String, String> handleIllegalArgumentException(final IllegalArgumentException e) {
-        return Map.of("error", "IllegalArgumentException", "errorMessage", e.getMessage() != null ? e.getMessage() : "");
-    }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
@@ -28,4 +23,5 @@ public class ItemErrorHandler {
     public Map<String, String> handleEmptyHeaderException(final EmptyHeaderException e) {
         return Map.of("error", "EmptyHeaderException", "errorMessage", e.getMessage() != null ? e.getMessage() : "");
     }
+
 }

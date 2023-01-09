@@ -41,7 +41,7 @@ public class ItemController {
     }
 
     @PostMapping
-    public Item create(@RequestHeader Map<String, String> headers, @RequestBody @Valid ItemDto itemDto) {
+    public ItemDto create(@RequestHeader Map<String, String> headers, @RequestBody @Valid ItemDto itemDto) {
         Long userId = getUserFromHeaders(headers);
         return itemService.add(userId, itemDto);
     }

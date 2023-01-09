@@ -17,7 +17,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User add(UserDto userDto) {
+    public UserDto add(UserDto userDto) {
         return userStorage.add(userDto);
     }
 

@@ -17,7 +17,7 @@ public class ItemStorageImp implements ItemStorage {
     private long id = 1;
 
     @Override
-    public Item add(User user, ItemDto itemDto) {
+    public ItemDto add(User user, ItemDto itemDto) {
 
         Item item = new Item();
         item.setId(id);
@@ -27,8 +27,10 @@ public class ItemStorageImp implements ItemStorage {
         item.setOwner(user);
 
         items.put(id, item);
+
+        itemDto.setId(id);
         id++;
-        return item;
+        return itemDto;
 
     }
 
