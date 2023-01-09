@@ -16,22 +16,27 @@ public class UserServiceImpl implements UserService {
         this.userStorage = userStorage;
     }
 
+    @Override
     public User add(UserDto userDto) {
         return userStorage.add(userDto);
     }
 
+    @Override
     public User update(long id, UserDto userDto) {
         return userStorage.update(id, userDto);
     }
 
+    @Override
     public void delete(long id) {
         userStorage.delete(id);
     }
 
+    @Override
     public User getUserById(long id) {
         return userStorage.getUserById(id);
     }
 
+    @Override
     public List<User> getUsers() {
         return userStorage.getUsers();
     }

@@ -4,9 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.error.EmptyHeaderException;
-import ru.practicum.shareit.item.error.UserNotFoundException;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserService;
 
 import javax.servlet.http.HttpServletRequest;
@@ -14,20 +12,15 @@ import javax.validation.Valid;
 import java.util.List;
 import java.util.Map;
 
-/**
- * TODO Sprint add-controllers.
- */
 @RestController
 @RequestMapping("/items")
 public class ItemController {
 
     private ItemService itemService;
-    private UserService userService;
 
     @Autowired
-    public ItemController(ItemService itemService, UserService userService) {
+    public ItemController(ItemService itemService) {
         this.itemService = itemService;
-        this.userService = userService;
     }
 
     @GetMapping("/{id}")
@@ -37,8 +30,8 @@ public class ItemController {
 
     @GetMapping
     public List<Item> getItems(@RequestHeader Map<String, String> headers) {
-        User user = getUserFromHeaders(headers);
-        return itemService.getItems(user);
+        Long userId = getUserFromHeaders(headers);
+        return itemService.getItems(userId);
     }
 
     @GetMapping("/search")
@@ -49,14 +42,14 @@ public class ItemController {
 
     @PostMapping
     public Item create(@RequestHeader Map<String, String> headers, @RequestBody @Valid ItemDto itemDto) {
-        User user = getUserFromHeaders(headers);
-        return itemService.add(user, itemDto);
+        Long userId = getUserFromHeaders(headers);
+        return itemService.add(userId, itemDto);
     }
 
     @PatchMapping("/{id}")
     public Item update(@RequestHeader Map<String, String> headers, @PathVariable("id") long id, @RequestBody ItemDto itemDto) {
-        User user = getUserFromHeaders(headers);
-        return itemService.update(user, id, itemDto);
+        Long userId = getUserFromHeaders(headers);
+        return itemService.update(userId, id, itemDto);
     }
 
     @DeleteMapping("/{id}")
@@ -64,23 +57,13 @@ public class ItemController {
         itemService.delete(id);
     }
 
-    private User getUserFromHeaders(Map<String, String> headers) {
-        User user = null;
+    private Long getUserFromHeaders(Map<String, String> headers) {
         String userId = headers.get("x-sharer-user-id");
         if (userId == null) {
             throw new EmptyHeaderException();
         }
         long id = Long.parseLong(userId);
-        try {
-            user = userService.getUserById(id);
-        } catch (IllegalArgumentException e) {
-            user = null;
-        }
-
-        if (user == null) {
-            throw new UserNotFoundException();
-        }
-        return user;
+        return id;
     }
 
 }

@@ -2,26 +2,24 @@ package ru.practicum.shareit.user;
 
 import org.springframework.stereotype.Component;
 import ru.practicum.shareit.user.dto.UserDto;
+import ru.practicum.shareit.user.error.DuplicateEmailException;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Component
 public class UserStorageImp implements UserStorage {
 
     private long id = 1;
-    private List<User> users = new ArrayList<>();
+    private Map<Long, User> users = new HashMap<>();
 
     @Override
     public User getUserById(long id) {
 
-        User user = null;
-        for (User userDB : users) {
-            if (userDB.getId() == id) {
-                user = userDB;
-                break;
-            }
-        }
+        User user = users.get(id);
+
         if (user == null) {
             throw new IllegalArgumentException();
         }
@@ -31,21 +29,20 @@ public class UserStorageImp implements UserStorage {
 
     @Override
     public List<User> getUsers() {
-        return users;
+        return new ArrayList<>(users.values());
     }
 
     @Override
     public User add(UserDto userDto) {
-        boolean invalidData = emailIsDuplicate(userDto);
-        if (invalidData) {
-            throw new IllegalArgumentException();
-        }
+        emailIsDuplicate(userDto);
+
         User user = new User();
         user.setName(userDto.getName());
         user.setEmail(userDto.getEmail());
         user.setId(id);
+        users.put(id, user);
+
         id++;
-        users.add(user);
         return user;
     }
 
@@ -53,18 +50,9 @@ public class UserStorageImp implements UserStorage {
     public User update(long id, UserDto userDto) {
 
         userDto.setId(id);
-        boolean invalidData = emailIsDuplicate(userDto);
-        if (invalidData) {
-            throw new IllegalArgumentException();
-        }
+        emailIsDuplicate(userDto);
 
-        User user = null;
-        for (User userDB : users) {
-            if (userDB.getId() == id) {
-                user = userDB;
-                break;
-            }
-        }
+        User user = users.get(id);
 
         if (user == null) {
             throw new IllegalArgumentException();
@@ -84,35 +72,27 @@ public class UserStorageImp implements UserStorage {
     @Override
     public void delete(long id) {
 
-        User user = null;
-        for (User userDB : users) {
-            if (userDB.getId() == id) {
-                user = userDB;
-                break;
-            }
-        }
+        User user = users.get(id);
         if (user == null) {
             throw new IllegalArgumentException();
         }
 
-        users.remove(user);
+        users.remove(id);
 
     }
 
-    private boolean emailIsDuplicate(UserDto userDto) {
+    private void emailIsDuplicate(UserDto userDto) {
 
         if (userDto.getEmail() == null) {
-            return false;
+            return;
         }
 
-        for (User user : users) {
+        for (User user : users.values()) {
             if (userDto.getEmail().equals(user.getEmail())
                     && userDto.getId() != user.getId()) {
-                return true;
+                    throw new DuplicateEmailException();
             }
         }
-
-        return false;
 
     }
 

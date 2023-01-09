@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.User;
+import ru.practicum.shareit.user.UserService;
 
 import java.util.List;
 
@@ -12,29 +13,39 @@ import java.util.List;
 public class ItemServiceImpl implements ItemService {
 
     private ItemStorage itemStorage;
+    private UserService userService;
 
     @Autowired
-    public ItemServiceImpl(ItemStorage itemStorage) {
+    public ItemServiceImpl(ItemStorage itemStorage, UserService userService) {
         this.itemStorage = itemStorage;
+        this.userService = userService;
     }
 
-    public Item add(User user, ItemDto itemDto) {
+    @Override
+    public Item add(Long userId, ItemDto itemDto) {
+        User user = userService.getUserById(userId);
         return itemStorage.add(user, itemDto);
     }
 
-    public Item update(User user, long id, ItemDto itemDto) {
+    @Override
+    public Item update(Long userId, long id, ItemDto itemDto) {
+        User user = userService.getUserById(userId);
         return itemStorage.update(user, id, itemDto);
     }
 
+    @Override
     public void delete(long id) {
         itemStorage.delete(id);
     }
 
+    @Override
     public Item getItemById(long id) {
         return itemStorage.getItemById(id);
     }
 
-    public List<Item> getItems(User user) {
+    @Override
+    public List<Item> getItems(Long userId) {
+        User user = userService.getUserById(userId);
         return itemStorage.getItems(user);
     }
 

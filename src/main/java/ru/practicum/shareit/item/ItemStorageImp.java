@@ -6,12 +6,14 @@ import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.User;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Component
 public class ItemStorageImp implements ItemStorage {
 
-    private List<Item> items = new ArrayList<>();
+    private Map<Long, Item> items = new HashMap();
     private long id = 1;
 
     @Override
@@ -24,7 +26,7 @@ public class ItemStorageImp implements ItemStorage {
         item.setAvailable(itemDto.getAvailable());
         item.setOwner(user);
 
-        items.add(item);
+        items.put(id, item);
         id++;
         return item;
 
@@ -32,13 +34,8 @@ public class ItemStorageImp implements ItemStorage {
 
     @Override
     public Item update(User user, long id, ItemDto itemDto) {
-        Item item = null;
-        for (Item itemDB : items) {
-            if (itemDB.getId() == id) {
-                item = itemDB;
-                break;
-            }
-        }
+        Item item = items.get(id);
+
         if (item == null) {
             throw new IllegalArgumentException();
         }
@@ -61,28 +58,17 @@ public class ItemStorageImp implements ItemStorage {
 
     @Override
     public void delete(long id) {
-        Item item = null;
-        for (Item itemDB : items) {
-            if (itemDB.getId() == id) {
-                item = itemDB;
-                break;
-            }
-        }
+        Item item = items.get(id);
+
         if (item == null) {
             throw new IllegalArgumentException();
         }
-        items.remove(item);
+        items.remove(id);
     }
 
     @Override
     public Item getItemById(long id) {
-        Item item = null;
-        for (Item itemDB : items) {
-            if (itemDB.getId() == id) {
-                item = itemDB;
-                break;
-            }
-        }
+        Item item = items.get(id);
         if (item == null) {
             throw new IllegalArgumentException();
         }
@@ -92,7 +78,7 @@ public class ItemStorageImp implements ItemStorage {
     @Override
     public List<Item> getItems(User owner) {
         List<Item> userItems = new ArrayList<>();
-        for (Item item : items) {
+        for (Item item : items.values()) {
           if (item.getOwner() == owner) {
               userItems.add(item);
           }
@@ -108,7 +94,7 @@ public class ItemStorageImp implements ItemStorage {
             return availableItems;
         }
 
-        for (Item item : items) {
+        for (Item item : items.values()) {
             if (item.isAvailable() && (item.getName().toLowerCase().contains(text)
                     || item.getDescription().toLowerCase().contains(text))) {
                 availableItems.add(item);
