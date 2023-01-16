@@ -1,14 +1,12 @@
 package ru.practicum.shareit.user;
 
-import ru.practicum.shareit.user.dto.UserDto;
-
 import java.util.List;
 
 public interface UserStorage {
 
-    UserDto add(UserDto userDto);
+    User add(User user);
 
-    User update(long id, UserDto userDto);
+    User update(long id, User user);
 
     void delete(long id);
 

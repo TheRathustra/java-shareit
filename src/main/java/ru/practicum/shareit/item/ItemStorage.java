@@ -1,6 +1,5 @@
 package ru.practicum.shareit.item;
 
-import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.User;
 
@@ -8,15 +7,15 @@ import java.util.List;
 
 public interface ItemStorage {
 
-    ItemDto add(User user, ItemDto itemDto);
+    Item add(User user, Item item);
 
-    Item update(User user, long id, ItemDto itemDto);
+    Item update(User user, long id, Item item);
 
     void delete(long id);
 
     Item getItemById(long id);
 
-    List<Item> getItems(User owner);
+    List<Item> getItems(Long idOwner);
 
     List<Item> findItemsByText(String text);
 }

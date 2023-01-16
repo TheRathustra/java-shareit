@@ -23,18 +23,18 @@ public class ItemController {
     }
 
     @GetMapping("/{id}")
-    public Item getItemById(@PathVariable("id") long id) {
+    public ItemDto getItemById(@PathVariable("id") long id) {
         return itemService.getItemById(id);
     }
 
     @GetMapping
-    public List<Item> getItems(@RequestHeader Map<String, String> headers) {
+    public List<ItemDto> getItems(@RequestHeader Map<String, String> headers) {
         Long userId = getUserFromHeaders(headers);
         return itemService.getItems(userId);
     }
 
     @GetMapping("/search")
-    public List<Item> getItemsByText(HttpServletRequest request) {
+    public List<ItemDto> getItemsByText(HttpServletRequest request) {
         String text = request.getParameter("text").toLowerCase();
         return itemService.getItemsByText(text);
     }
@@ -46,7 +46,7 @@ public class ItemController {
     }
 
     @PatchMapping("/{id}")
-    public Item update(@RequestHeader Map<String, String> headers, @PathVariable("id") long id, @RequestBody ItemDto itemDto) {
+    public ItemDto update(@RequestHeader Map<String, String> headers, @PathVariable("id") long id, @RequestBody ItemDto itemDto) {
         Long userId = getUserFromHeaders(headers);
         return itemService.update(userId, id, itemDto);
     }

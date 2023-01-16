@@ -1,7 +1,6 @@
 package ru.practicum.shareit.item;
 
 import org.springframework.stereotype.Component;
-import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.User;
 
@@ -17,71 +16,63 @@ public class ItemStorageImp implements ItemStorage {
     private long id = 1;
 
     @Override
-    public ItemDto add(User user, ItemDto itemDto) {
+    public Item add(User user, Item item) {
 
-        Item item = new Item();
-        item.setId(id);
-        item.setDescription(itemDto.getDescription());
-        item.setName(itemDto.getName());
-        item.setAvailable(itemDto.getAvailable());
         item.setOwner(user);
-
+        item.setId(id);
         items.put(id, item);
 
-        itemDto.setId(id);
         id++;
-        return itemDto;
+        return item;
 
     }
 
     @Override
-    public Item update(User user, long id, ItemDto itemDto) {
-        Item item = items.get(id);
+    public Item update(User user, long id, Item item) {
+        Item itemDB = items.get(id);
 
-        if (item == null) {
+        if (itemDB == null)
             throw new IllegalArgumentException();
-        }
 
-        if (!user.equals(item.getOwner())) {
+        if (!user.equals(itemDB.getOwner()))
             throw new IllegalArgumentException();
-        }
 
-        if (itemDto.getName() != null) {
-            item.setName(itemDto.getName());
-        }
-        if (itemDto.getDescription() != null) {
-            item.setDescription(itemDto.getDescription());
-        }
-        if (itemDto.getAvailable() != null) {
-            item.setAvailable(itemDto.getAvailable());
-        }
-        return item;
+        if (item.getName() != null)
+            itemDB.setName(item.getName());
+
+        if (item.getDescription() != null)
+            itemDB.setDescription(item.getDescription());
+
+        if (item.getAvailable() != null)
+            itemDB.setAvailable(item.getAvailable());
+
+        return itemDB;
     }
 
     @Override
     public void delete(long id) {
         Item item = items.get(id);
 
-        if (item == null) {
+        if (item == null)
             throw new IllegalArgumentException();
-        }
+
         items.remove(id);
     }
 
     @Override
     public Item getItemById(long id) {
         Item item = items.get(id);
-        if (item == null) {
+        if (item == null)
             throw new IllegalArgumentException();
-        }
+
         return item;
     }
 
     @Override
-    public List<Item> getItems(User owner) {
+    public List<Item> getItems(Long idOwner) {
         List<Item> userItems = new ArrayList<>();
         for (Item item : items.values()) {
-          if (item.getOwner() == owner) {
+          if (item.getOwner().getId() == idOwner) {
               userItems.add(item);
           }
         }
@@ -97,7 +88,7 @@ public class ItemStorageImp implements ItemStorage {
         }
 
         for (Item item : items.values()) {
-            if (item.isAvailable() && (item.getName().toLowerCase().contains(text)
+            if (item.getAvailable() && (item.getName().toLowerCase().contains(text)
                     || item.getDescription().toLowerCase().contains(text))) {
                 availableItems.add(item);
             }

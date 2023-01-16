@@ -1,7 +1,6 @@
 package ru.practicum.shareit.user;
 
 import org.springframework.stereotype.Component;
-import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.error.DuplicateEmailException;
 
 import java.util.ArrayList;
@@ -33,40 +32,36 @@ public class UserStorageImp implements UserStorage {
     }
 
     @Override
-    public UserDto add(UserDto userDto) {
-        emailIsDuplicate(userDto);
+    public User add(User user) {
+        emailIsDuplicate(user);
 
-        User user = new User();
-        user.setName(userDto.getName());
-        user.setEmail(userDto.getEmail());
         user.setId(id);
         users.put(id, user);
 
-        userDto.setId(id);
         id++;
-        return userDto;
+        return user;
     }
 
     @Override
-    public User update(long id, UserDto userDto) {
+    public User update(long id, User user) {
 
-        userDto.setId(id);
-        emailIsDuplicate(userDto);
+        user.setId(id);
+        emailIsDuplicate(user);
 
-        User user = users.get(id);
+        User userDB = users.get(id);
 
-        if (user == null) {
+        if (userDB == null) {
             throw new IllegalArgumentException();
         }
 
-        if (userDto.getName() != null) {
-            user.setName(userDto.getName());
+        if (user.getName() != null) {
+            userDB.setName(user.getName());
         }
-        if (userDto.getEmail() != null) {
-            user.setEmail(userDto.getEmail());
+        if (user.getEmail() != null) {
+            userDB.setEmail(user.getEmail());
         }
 
-        return user;
+        return userDB;
 
     }
 
@@ -82,15 +77,15 @@ public class UserStorageImp implements UserStorage {
 
     }
 
-    private void emailIsDuplicate(UserDto userDto) {
+    private void emailIsDuplicate(User user) {
 
-        if (userDto.getEmail() == null) {
+        if (user.getEmail() == null || users.values().isEmpty()) {
             return;
         }
 
-        for (User user : users.values()) {
-            if (userDto.getEmail().equals(user.getEmail())
-                    && userDto.getId() != user.getId()) {
+        for (User userDB : users.values()) {
+            if (user.getEmail().equals(userDB.getEmail())
+                    && user.getId() != userDB.getId()) {
                     throw new DuplicateEmailException();
             }
         }
