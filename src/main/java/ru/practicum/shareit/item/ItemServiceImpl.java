@@ -28,8 +28,8 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public ItemDto add(Long userId, ItemDto itemDto) {
         UserDto userDto = userService.getUserById(userId);
-        User user = UserMapper.DtoToUser(userDto);
-        Item item = ItemMapper.DTOtoItem(itemDto);
+        User user = UserMapper.dtoToUser(userDto);
+        Item item = ItemMapper.dtoToItem(itemDto);
 
         Item itemAdded = itemStorage.add(user, item);
 
@@ -39,8 +39,8 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public ItemDto update(Long userId, long id, ItemDto itemDto) {
         UserDto userDto = userService.getUserById(userId);
-        User user = UserMapper.DtoToUser(userDto);
-        Item item = ItemMapper.DTOtoItem(itemDto);
+        User user = UserMapper.dtoToUser(userDto);
+        Item item = ItemMapper.dtoToItem(itemDto);
 
         Item itemUpdated = itemStorage.update(user, id, item);
 

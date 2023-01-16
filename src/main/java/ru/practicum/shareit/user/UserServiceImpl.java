@@ -20,14 +20,14 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto add(UserDto userDto) {
-        User user = UserMapper.DtoToUser(userDto);
+        User user = UserMapper.dtoToUser(userDto);
         User addedUser = userStorage.add(user);
         return UserMapper.userToDto(addedUser);
     }
 
     @Override
     public UserDto update(long id, UserDto userDto) {
-        User user = UserMapper.DtoToUser(userDto);
+        User user = UserMapper.dtoToUser(userDto);
         User updatedUser = userStorage.update(id, user);
         return UserMapper.userToDto(updatedUser);
     }
