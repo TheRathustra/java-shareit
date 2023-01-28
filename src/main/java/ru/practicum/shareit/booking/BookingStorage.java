@@ -13,4 +13,7 @@ public interface BookingStorage {
     List<Booking> getBookingsByItemId(Long itemId);
 
     List<Booking> getBookingsByItemIdAndBookerInPast(Long itemId, Long userId);
+
+    Booking getLastBooking(Long itemId);
+    Booking getNextBooking(Long itemId);
 }

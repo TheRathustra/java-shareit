@@ -53,15 +53,12 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public ItemAnswer getItemById(long id) {
         Item item = itemStorage.getItemById(id);
-        List<Booking> bookings = bookingStorage.getBookingsByItemId(id);
+        Booking lastBooking = bookingStorage.getLastBooking(id);
+        Booking nextBooking = bookingStorage.getNextBooking(id);
 
         ItemAnswer answer = ItemMapper.itemToAnswerDTO(item);
-        if (!bookings.isEmpty()) {
-            Booking lastBooking = bookings.get(0);
-            Booking nextBooking = bookings.get(bookings.size() - 1);
-            answer.setLastBooking(lastBooking);
-            answer.setNextBooking(nextBooking);
-        }
+        answer.setLastBooking(lastBooking);
+        answer.setNextBooking(nextBooking);
 
         List<Comment> comments = itemStorage.getCommentsByItemId(id);
         if (!comments.isEmpty()) {

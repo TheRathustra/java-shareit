@@ -34,8 +34,31 @@ public class BookingStorageImpl implements BookingStorage {
 
     public List<Booking> getBookingsByItemId(Long itemId) {
         Specification<Booking> spec = BookingSpecs.byItem(itemId);
+        spec = spec.and(BookingSpecs.byStatus(BookingStatus.APPROVED));
         List<Booking> bookings = repository.findAll(spec, Sort.by(Sort.Direction.ASC,"start"));
         return bookings;
+    }
+
+    public Booking getLastBooking(Long itemId) {
+        Booking booking = null;
+        Specification<Booking> spec = BookingSpecs.byItem(itemId);
+        spec = spec.and(BookingSpecs.byStatus(BookingStatus.APPROVED));
+        spec = spec.and(BookingSpecs.past());
+        List<Booking> bookings = repository.findAll(spec, Sort.by(Sort.Direction.DESC,"start"));
+        if (!bookings.isEmpty())
+            booking = bookings.get(0);
+        return booking;
+    }
+
+    public Booking getNextBooking(Long itemId) {
+        Booking booking = null;
+        Specification<Booking> spec = BookingSpecs.byItem(itemId);
+        spec = spec.and(BookingSpecs.byStatus(BookingStatus.APPROVED));
+        spec = spec.and(BookingSpecs.future());
+        List<Booking> bookings = repository.findAll(spec, Sort.by(Sort.Direction.ASC,"start"));
+        if (!bookings.isEmpty())
+            booking = bookings.get(0);
+        return booking;
     }
 
     public List<Booking> getBookingsByItemIdAndBookerInPast(Long itemId, Long userId) {

@@ -24,6 +24,8 @@ public class ItemAnswer {
     private List<CommentAnswerDto> comments;
 
     public void setLastBooking(Booking lastBooking) {
+        if (lastBooking == null)
+            return;
         BookingDtoItem dto = new BookingDtoItem();
         dto.setId(lastBooking.getId());
         dto.setItemId(lastBooking.getItem().getId());
@@ -32,6 +34,8 @@ public class ItemAnswer {
     }
 
     public void setNextBooking(Booking nextBooking) {
+        if (nextBooking == null)
+            return;
         BookingDtoItem dto = new BookingDtoItem();
         dto.setId(nextBooking.getId());
         dto.setItemId(nextBooking.getItem().getId());
