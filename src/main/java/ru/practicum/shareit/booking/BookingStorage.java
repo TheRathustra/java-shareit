@@ -12,8 +12,10 @@ public interface BookingStorage {
     Booking getById(Long id);
 
     List<Booking> getBookingsByState(Specification<Booking> spec, BookingState state);
+
     List<Booking> getBookingsByItemIdAndBookerInPast(Long itemId, Long userId);
 
     Booking getLastBooking(Long itemId);
+
     Booking getNextBooking(Long itemId);
 }

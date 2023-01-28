@@ -15,8 +15,8 @@ import java.util.Optional;
 @Component
 public class ItemStorageImp implements ItemStorage {
 
-    final private ItemRepository repository;
-    final private CommentRepository commentRepository;
+    private final ItemRepository repository;
+    private final CommentRepository commentRepository;
 
     @Autowired
     public ItemStorageImp(ItemRepository repository, CommentRepository commentRepository) {

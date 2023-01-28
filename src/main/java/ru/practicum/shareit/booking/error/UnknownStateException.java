@@ -1,6 +1,6 @@
 package ru.practicum.shareit.booking.error;
 
-public class UnknownStateException extends RuntimeException{
+public class UnknownStateException extends RuntimeException {
     String message;
 
     public UnknownStateException(String message) {
