@@ -1,54 +1,48 @@
 package ru.practicum.shareit.user;
 
 import org.springframework.stereotype.Component;
-import ru.practicum.shareit.user.error.DuplicateEmailException;
+import ru.practicum.shareit.user.dto.UserRepository;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.Optional;
 
 @Component
 public class UserStorageImp implements UserStorage {
 
-    private long id = 1;
-    private Map<Long, User> users = new HashMap<>();
+    private final UserRepository userRepository;
+
+    public UserStorageImp(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
 
     @Override
     public User getUserById(long id) {
 
-        User user = users.get(id);
+        Optional<User> userDto = userRepository.findById(id);
 
-        if (user == null) {
+        if (userDto.isEmpty()) {
             throw new IllegalArgumentException();
         }
-        return user;
+        return userDto.get();
 
     }
 
     @Override
     public List<User> getUsers() {
-        return new ArrayList<>(users.values());
+        List<User> users = userRepository.findAll();
+        return users;
     }
 
     @Override
     public User add(User user) {
-        emailIsDuplicate(user);
-
-        user.setId(id);
-        users.put(id, user);
-
-        id++;
+        userRepository.saveAndFlush(user);
         return user;
     }
 
     @Override
     public User update(long id, User user) {
 
-        user.setId(id);
-        emailIsDuplicate(user);
-
-        User userDB = users.get(id);
+        User userDB = userRepository.getById(id);
 
         if (userDB == null) {
             throw new IllegalArgumentException();
@@ -61,6 +55,8 @@ public class UserStorageImp implements UserStorage {
             userDB.setEmail(user.getEmail());
         }
 
+        userRepository.saveAndFlush(userDB);
+
         return userDB;
 
     }
@@ -68,27 +64,12 @@ public class UserStorageImp implements UserStorage {
     @Override
     public void delete(long id) {
 
-        User user = users.get(id);
+        User user = userRepository.getById(id);
         if (user == null) {
             throw new IllegalArgumentException();
         }
 
-        users.remove(id);
-
-    }
-
-    private void emailIsDuplicate(User user) {
-
-        if (user.getEmail() == null || users.values().isEmpty()) {
-            return;
-        }
-
-        for (User userDB : users.values()) {
-            if (user.getEmail().equals(userDB.getEmail())
-                    && user.getId() != userDB.getId()) {
-                    throw new DuplicateEmailException();
-            }
-        }
+        userRepository.delete(user);
 
     }
 

@@ -2,10 +2,7 @@ package ru.practicum.shareit.user;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import ru.practicum.shareit.user.dto.UserDto;
-import ru.practicum.shareit.user.dto.UserMapper;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Component
@@ -19,17 +16,15 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDto add(UserDto userDto) {
-        User user = UserMapper.dtoToUser(userDto);
+    public User add(User user) {
         User addedUser = userStorage.add(user);
-        return UserMapper.userToDto(addedUser);
+        return addedUser;
     }
 
     @Override
-    public UserDto update(long id, UserDto userDto) {
-        User user = UserMapper.dtoToUser(userDto);
+    public User update(long id, User user) {
         User updatedUser = userStorage.update(id, user);
-        return UserMapper.userToDto(updatedUser);
+        return updatedUser;
     }
 
     @Override
@@ -38,19 +33,15 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDto getUserById(long id) {
+    public User getUserById(long id) {
         User user = userStorage.getUserById(id);
-        return UserMapper.userToDto(user);
+        return user;
     }
 
     @Override
-    public List<UserDto> getUsers() {
+    public List<User> getUsers() {
         List<User> users = userStorage.getUsers();
-        List<UserDto> usersDTO = new ArrayList<>();
-        for (User user : users) {
-            usersDTO.add(UserMapper.userToDto(user));
-        }
-        return usersDTO;
+        return users;
     }
 
 }

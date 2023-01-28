@@ -1,40 +1,48 @@
 package ru.practicum.shareit.item;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import ru.practicum.shareit.item.comment.Comment;
+import ru.practicum.shareit.item.comment.CommentRepository;
+import ru.practicum.shareit.item.dto.ItemRepository;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.User;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.Optional;
 
 @Component
 public class ItemStorageImp implements ItemStorage {
 
-    private Map<Long, Item> items = new HashMap();
-    private long id = 1;
+    final private ItemRepository repository;
+    final private CommentRepository commentRepository;
+
+    @Autowired
+    public ItemStorageImp(ItemRepository repository, CommentRepository commentRepository) {
+        this.repository = repository;
+        this.commentRepository = commentRepository;
+    }
 
     @Override
     public Item add(User user, Item item) {
 
         item.setOwner(user);
-        item.setId(id);
-        items.put(id, item);
+        repository.saveAndFlush(item);
 
-        id++;
         return item;
 
     }
 
     @Override
     public Item update(User user, long id, Item item) {
-        Item itemDB = items.get(id);
+
+        Item itemDB = repository.getById(id);
+        if (itemDB.getOwner().getId() != user.getId()) {
+            throw new IllegalArgumentException();
+        }
 
         if (itemDB == null)
-            throw new IllegalArgumentException();
-
-        if (!user.equals(itemDB.getOwner()))
             throw new IllegalArgumentException();
 
         if (item.getName() != null)
@@ -46,53 +54,53 @@ public class ItemStorageImp implements ItemStorage {
         if (item.getAvailable() != null)
             itemDB.setAvailable(item.getAvailable());
 
+        repository.saveAndFlush(itemDB);
         return itemDB;
     }
 
     @Override
     public void delete(long id) {
-        Item item = items.get(id);
+        Optional<Item> item = repository.findById(id);
 
-        if (item == null)
+        if (item.isEmpty())
             throw new IllegalArgumentException();
 
-        items.remove(id);
+        repository.delete(item.get());
     }
 
     @Override
     public Item getItemById(long id) {
-        Item item = items.get(id);
-        if (item == null)
+        Optional<Item> item = repository.findById(id);
+
+        if (item.isEmpty())
             throw new IllegalArgumentException();
 
-        return item;
+        return item.get();
     }
 
     @Override
     public List<Item> getItems(Long idOwner) {
-        List<Item> userItems = new ArrayList<>();
-        for (Item item : items.values()) {
-          if (item.getOwner().getId() == idOwner) {
-              userItems.add(item);
-          }
-        }
-
+        List<Item> userItems = repository.findAllByUser(idOwner);
         return userItems;
     }
 
     @Override
     public List<Item> findItemsByText(String text) {
-        List<Item> availableItems = new ArrayList<>();
         if (text.isEmpty()) {
-            return availableItems;
+            return new ArrayList<Item>();
         }
-
-        for (Item item : items.values()) {
-            if (item.getAvailable() && (item.getName().toLowerCase().contains(text)
-                    || item.getDescription().toLowerCase().contains(text))) {
-                availableItems.add(item);
-            }
-        }
+        List<Item> availableItems = repository.search(text);
         return availableItems;
+    }
+
+    @Override
+    public Comment addComment(Comment comment) {
+        commentRepository.saveAndFlush(comment);
+        return comment;
+    }
+
+    @Override
+    public List<Comment> getCommentsByItemId(Long itemId) {
+        return commentRepository.findAllByItem_Id(itemId);
     }
 }

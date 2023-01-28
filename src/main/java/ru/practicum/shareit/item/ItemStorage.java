@@ -1,5 +1,6 @@
 package ru.practicum.shareit.item;
 
+import ru.practicum.shareit.item.comment.Comment;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.User;
 
@@ -18,4 +19,9 @@ public interface ItemStorage {
     List<Item> getItems(Long idOwner);
 
     List<Item> findItemsByText(String text);
+
+    Comment addComment(Comment comment);
+
+    List<Comment> getCommentsByItemId(Long itemId);
+
 }

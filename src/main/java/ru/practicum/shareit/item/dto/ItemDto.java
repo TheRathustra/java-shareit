@@ -1,30 +1,37 @@
 package ru.practicum.shareit.item.dto;
 
 import lombok.Data;
-import ru.practicum.shareit.user.User;
+import lombok.NoArgsConstructor;
+import ru.practicum.shareit.request.dto.ItemRequestDto;
+import ru.practicum.shareit.user.dto.UserDto;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
 @Data
+@NoArgsConstructor
 public class ItemDto {
-    private long id;
+
+    private Long id;
+
     @NotEmpty
     private String name;
-    @NotEmpty
+
+    @NotNull
     private String description;
 
     @NotNull
     private Boolean available;
-    private User owner;
-    private long request;
 
-    public ItemDto(String name, String description, Boolean available, User owner, long request) {
+    private UserDto owner;
+
+    private ItemRequestDto request;
+
+    public ItemDto(String name, String description, Boolean available, UserDto owner, ItemRequestDto request) {
         this.name = name;
         this.description = description;
         this.available = available;
         this.owner = owner;
         this.request = request;
     }
-
 }
