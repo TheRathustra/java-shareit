@@ -1,6 +1,7 @@
 package ru.practicum.shareit.item;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.item.comment.Comment;
 import ru.practicum.shareit.item.comment.CommentAnswerDto;
@@ -22,7 +23,7 @@ import java.util.stream.Collectors;
 @RequestMapping("/items")
 public class ItemController {
 
-    private ItemService itemService;
+    private final ItemService itemService;
 
     @Autowired
     public ItemController(ItemService itemService) {
@@ -30,28 +31,26 @@ public class ItemController {
     }
 
     @GetMapping("/{id}")
-    public ItemAnswer getItemById(@PathVariable("id") long id) {
-        ItemAnswer item = itemService.getItemById(id);
-        return item;
+    public ItemAnswer getItemById(@RequestHeader Map<String, String> headers, @PathVariable("id") Long itemId) {
+        Long userId = getUserFromHeaders(headers);
+        return itemService.getItemById(itemId, userId);
     }
 
     @GetMapping
-    public List<ItemDto> getItems(@RequestHeader Map<String, String> headers) {
+    public List<ItemAnswer> getItems(@RequestHeader Map<String, String> headers) {
         Long userId = getUserFromHeaders(headers);
-        List<Item> items = itemService.getItems(userId);
-        List<ItemDto> itemsDto = items.stream().map(ItemMapper::itemToDTO).collect(Collectors.toList());
-        return itemsDto;
+        return itemService.getItems(userId);
     }
 
     @GetMapping("/search")
     public List<ItemDto> getItemsByText(HttpServletRequest request) {
         String text = request.getParameter("text").toUpperCase(Locale.ROOT).trim();
         List<Item> items = itemService.getItemsByText(text);
-        List<ItemDto> itemsDto = items.stream().map(ItemMapper::itemToDTO).collect(Collectors.toList());
-        return itemsDto;
+        return items.stream().map(ItemMapper::itemToDTO).collect(Collectors.toList());
     }
 
     @PostMapping
+    @Transactional
     public ItemDto create(@RequestHeader Map<String, String> headers, @RequestBody @Valid ItemDto itemDto) {
         Long userId = getUserFromHeaders(headers);
         Item item = ItemMapper.dtoToItem(itemDto);
@@ -60,6 +59,7 @@ public class ItemController {
     }
 
     @PostMapping("{itemId}/comment")
+    @Transactional
     public CommentAnswerDto addComment(@RequestHeader Map<String, String> headers, @PathVariable("itemId") Long itemId,  @RequestBody @Valid CommentDTO commentDTO) {
         Long userId = getUserFromHeaders(headers);
         Comment comment = CommentDTO.dtoToComment(commentDTO);
@@ -68,6 +68,7 @@ public class ItemController {
     }
 
     @PatchMapping("/{id}")
+    @Transactional
     public ItemDto update(@RequestHeader Map<String, String> headers, @PathVariable("id") long id, @RequestBody ItemDto itemDto) {
         Long userId = getUserFromHeaders(headers);
         Item item = ItemMapper.dtoToItem(itemDto);
@@ -76,6 +77,7 @@ public class ItemController {
     }
 
     @DeleteMapping("/{id}")
+    @Transactional
     public void delete(@PathVariable("id") long id) {
         itemService.delete(id);
     }
@@ -85,8 +87,7 @@ public class ItemController {
         if (userId == null) {
             throw new EmptyHeaderException();
         }
-        long id = Long.parseLong(userId);
-        return id;
+        return Long.parseLong(userId);
     }
 
 }

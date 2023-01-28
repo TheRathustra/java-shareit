@@ -3,11 +3,16 @@ package ru.practicum.shareit.booking;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import ru.practicum.shareit.booking.dto.BookingSpecs;
 import ru.practicum.shareit.booking.error.ItemUnavailableException;
 import ru.practicum.shareit.booking.error.UpdateBookingException;
+import ru.practicum.shareit.booking.model.Booking;
+import ru.practicum.shareit.booking.model.BookingState;
+import ru.practicum.shareit.booking.model.BookingStatus;
 import ru.practicum.shareit.item.ItemStorage;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.user.User;
+import ru.practicum.shareit.user.error.UndefinedUserException;
+import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.UserService;
 
 import java.util.List;
@@ -15,9 +20,9 @@ import java.util.List;
 @Service
 public class BookingServiceImpl implements BookingService {
 
-    private BookingStorage storage;
-    private UserService userService;
-    private ItemStorage itemStorage;
+    private final BookingStorage storage;
+    private final UserService userService;
+    private final ItemStorage itemStorage;
 
     @Autowired
     public BookingServiceImpl(BookingStorage storage, UserService userService, ItemStorage itemStorage) {
@@ -30,12 +35,12 @@ public class BookingServiceImpl implements BookingService {
     public Booking add(Booking booking, Long userId, Long itemId) {
 
         Item item = itemStorage.getItemById(itemId);
-        if (item.getAvailable() == false) {
+        if (!item.getAvailable()) {
             throw new ItemUnavailableException();
         }
         User user = userService.getUserById(userId);
 
-        if (item.getOwner().getId() == userId) {
+        if (item.getOwner().getId().equals(userId)) {
             throw new IllegalArgumentException();
         }
 
@@ -43,8 +48,7 @@ public class BookingServiceImpl implements BookingService {
         booking.setItem(item);
         booking.setBooker(user);
 
-        Booking newBooking = storage.save(booking);
-        return newBooking;
+        return storage.save(booking);
     }
 
     @Override
@@ -54,7 +58,7 @@ public class BookingServiceImpl implements BookingService {
         Long ownerId = booking.getItem().getOwner().getId();
         Long bookerId = booking.getBooker().getId();
 
-        if (ownerId != userId && bookerId != userId)
+        if (!ownerId.equals(userId) && !bookerId.equals(userId))
             throw new IllegalArgumentException();
 
         return booking;
@@ -66,14 +70,14 @@ public class BookingServiceImpl implements BookingService {
         Long bookerId = booking.getBooker().getId();
         Long ownerId = booking.getItem().getOwner().getId();
 
-        BookingStatus status = null;
-        if (userId == bookerId) {
+        BookingStatus status;
+        if (userId.equals(bookerId)) {
             if (!approved) {
                 status = BookingStatus.CANCELED;
             } else {
                 throw new IllegalArgumentException();
             }
-        } else if (ownerId == userId) {
+        } else if (ownerId.equals(userId)) {
             if (approved) {
                 status = BookingStatus.APPROVED;
             } else {
@@ -88,7 +92,6 @@ public class BookingServiceImpl implements BookingService {
         }
 
         booking.setStatus(status);
-
         booking = storage.save(booking);
         return booking;
     }
@@ -96,6 +99,9 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public List<Booking> getBookingsByState(Long userId, BookingState state) {
         User user = userService.getUserById(userId);
+        if (user == null) {
+            throw new UndefinedUserException();
+        }
         Specification<Booking> spec = BookingSpecs.byBooker(userId);
         return storage.getBookingsByState(spec, state);
     }
@@ -103,12 +109,11 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public List<Booking> getBookingsByOwner(Long userId, BookingState state) {
         User user = userService.getUserById(userId);
+        if (user == null) {
+            throw new UndefinedUserException();
+        }
         Specification<Booking> spec = BookingSpecs.byOwner(userId);
         return storage.getBookingsByState(spec, state);
     }
 
-    @Override
-    public List<Booking> getBookingsByItemID(Long itemId) {
-        return storage.getBookingsByItemId(itemId);
-    }
 }

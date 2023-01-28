@@ -14,9 +14,9 @@ public interface ItemService {
 
     void delete(long id);
 
-    ItemAnswer getItemById(long id);
+    ItemAnswer getItemById(Long id, Long userId);
 
-    List<Item> getItems(Long userId);
+    List<ItemAnswer> getItems(Long userId);
 
     List<Item> getItemsByText(String text);
 

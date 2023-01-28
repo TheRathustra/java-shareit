@@ -6,7 +6,7 @@ import ru.practicum.shareit.item.comment.Comment;
 import ru.practicum.shareit.item.comment.CommentRepository;
 import ru.practicum.shareit.item.dto.ItemRepository;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.user.User;
+import ru.practicum.shareit.user.model.User;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,7 +38,7 @@ public class ItemStorageImp implements ItemStorage {
     public Item update(User user, long id, Item item) {
 
         Item itemDB = repository.getById(id);
-        if (itemDB.getOwner().getId() != user.getId()) {
+        if (!itemDB.getOwner().getId().equals(user.getId())) {
             throw new IllegalArgumentException();
         }
 
@@ -80,17 +80,15 @@ public class ItemStorageImp implements ItemStorage {
 
     @Override
     public List<Item> getItems(Long idOwner) {
-        List<Item> userItems = repository.findAllByUser(idOwner);
-        return userItems;
+        return repository.findAllByUser(idOwner);
     }
 
     @Override
     public List<Item> findItemsByText(String text) {
         if (text.isEmpty()) {
-            return new ArrayList<Item>();
+            return new ArrayList<>();
         }
-        List<Item> availableItems = repository.search(text);
-        return availableItems;
+        return repository.search(text);
     }
 
     @Override

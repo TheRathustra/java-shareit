@@ -5,6 +5,10 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 import ru.practicum.shareit.booking.dto.BookingRepository;
+import ru.practicum.shareit.booking.dto.BookingSpecs;
+import ru.practicum.shareit.booking.model.Booking;
+import ru.practicum.shareit.booking.model.BookingState;
+import ru.practicum.shareit.booking.model.BookingStatus;
 
 import java.util.List;
 import java.util.Optional;
@@ -12,7 +16,7 @@ import java.util.Optional;
 @Component
 public class BookingStorageImpl implements BookingStorage {
 
-    private BookingRepository repository;
+    private final BookingRepository repository;
 
     @Autowired
     public BookingStorageImpl(BookingRepository repository) {
@@ -30,13 +34,6 @@ public class BookingStorageImpl implements BookingStorage {
         if (booking.isEmpty())
             throw new IllegalArgumentException();
         return booking.get();
-    }
-
-    public List<Booking> getBookingsByItemId(Long itemId) {
-        Specification<Booking> spec = BookingSpecs.byItem(itemId);
-        spec = spec.and(BookingSpecs.byStatus(BookingStatus.APPROVED));
-        List<Booking> bookings = repository.findAll(spec, Sort.by(Sort.Direction.ASC,"start"));
-        return bookings;
     }
 
     public Booking getLastBooking(Long itemId) {
@@ -66,8 +63,7 @@ public class BookingStorageImpl implements BookingStorage {
         spec = spec.and(BookingSpecs.byBooker(userId));
         spec = spec.and(BookingSpecs.byStatus(BookingStatus.APPROVED));
         spec = spec.and(BookingSpecs.past());
-        List<Booking> bookings = repository.findAll(spec, Sort.by(Sort.Direction.ASC,"start"));
-        return bookings;
+        return repository.findAll(spec, Sort.by(Sort.Direction.ASC,"start"));
     }
 
     @Override
@@ -84,8 +80,6 @@ public class BookingStorageImpl implements BookingStorage {
         if (state == BookingState.REJECTED)
             spec = spec.and(BookingSpecs.byStatus(BookingStatus.REJECTED));
 
-        List<Booking> bookings = repository.findAll(spec, Sort.by(Sort.Direction.DESC,"start"));
-
-        return bookings;
+        return repository.findAll(spec, Sort.by(Sort.Direction.DESC,"start"));
     }
 }

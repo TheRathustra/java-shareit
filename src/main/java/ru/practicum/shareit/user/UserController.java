@@ -5,6 +5,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.dto.UserMapper;
+import ru.practicum.shareit.user.model.User;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -14,7 +15,7 @@ import java.util.stream.Collectors;
 @RequestMapping(path = "/users")
 public class UserController {
 
-    private UserService userService;
+    private final UserService userService;
 
     @Autowired
     public UserController(UserService userService) {
@@ -30,8 +31,7 @@ public class UserController {
     @GetMapping
     public List<UserDto> getUsers() {
         List<User> users = userService.getUsers();
-        List<UserDto> usersDto = users.stream().map(UserMapper::userToDto).collect(Collectors.toList());
-        return usersDto;
+        return users.stream().map(UserMapper::userToDto).collect(Collectors.toList());
     }
 
     @PostMapping

@@ -2,27 +2,27 @@ package ru.practicum.shareit.item;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import ru.practicum.shareit.booking.Booking;
+import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.BookingStorage;
 import ru.practicum.shareit.item.comment.Comment;
 import ru.practicum.shareit.item.comment.CommentAnswerDto;
-import ru.practicum.shareit.item.comment.CommentDTO;
 import ru.practicum.shareit.item.dto.ItemAnswer;
 import ru.practicum.shareit.item.dto.ItemMapper;
 import ru.practicum.shareit.item.error.CommentWithoutBooking;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.user.User;
+import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.UserService;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Component
 public class ItemServiceImpl implements ItemService {
 
-    private ItemStorage itemStorage;
-    private UserService userService;
-    private BookingStorage bookingStorage;
+    private final ItemStorage itemStorage;
+    private final UserService userService;
+    private final BookingStorage bookingStorage;
 
     @Autowired
     public ItemServiceImpl(ItemStorage itemStorage, UserService userService, BookingStorage bookingStorage) {
@@ -34,15 +34,13 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public Item add(Long userId, Item item) {
         User user = userService.getUserById(userId);
-        Item itemAdded = itemStorage.add(user, item);
-        return itemAdded;
+        return itemStorage.add(user, item);
     }
 
     @Override
     public Item update(Long userId, long id, Item item) {
         User user = userService.getUserById(userId);
-        Item itemUpdated = itemStorage.update(user, id, item);
-        return itemUpdated;
+        return itemStorage.update(user, id, item);
     }
 
     @Override
@@ -51,14 +49,16 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public ItemAnswer getItemById(long id) {
+    public ItemAnswer getItemById(Long id, Long userId) {
         Item item = itemStorage.getItemById(id);
-        Booking lastBooking = bookingStorage.getLastBooking(id);
-        Booking nextBooking = bookingStorage.getNextBooking(id);
-
         ItemAnswer answer = ItemMapper.itemToAnswerDTO(item);
-        answer.setLastBooking(lastBooking);
-        answer.setNextBooking(nextBooking);
+
+        if (item.getOwner().getId().equals(userId)) {
+            Booking lastBooking = bookingStorage.getLastBooking(id);
+            Booking nextBooking = bookingStorage.getNextBooking(id);
+            answer.setLastBooking(lastBooking);
+            answer.setNextBooking(nextBooking);
+        }
 
         List<Comment> comments = itemStorage.getCommentsByItemId(id);
         if (!comments.isEmpty()) {
@@ -71,15 +71,30 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<Item> getItems(Long userId) {
+    public List<ItemAnswer> getItems(Long userId) {
         List<Item> items = itemStorage.getItems(userId);
-        return items;
+
+        List<ItemAnswer> itemAnswer = new ArrayList<>();
+        for (Item item : items) {
+
+            ItemAnswer answer = ItemMapper.itemToAnswerDTO(item);
+
+            if (item.getOwner().getId().equals(userId)) {
+                Booking lastBooking = bookingStorage.getLastBooking(item.getId());
+                Booking nextBooking = bookingStorage.getNextBooking(item.getId());
+                answer.setLastBooking(lastBooking);
+                answer.setNextBooking(nextBooking);
+            }
+
+            itemAnswer.add(answer);
+        }
+
+        return itemAnswer;
     }
 
     @Override
     public List<Item> getItemsByText(String text) {
-        List<Item> items = itemStorage.findItemsByText(text);
-        return items;
+        return itemStorage.findItemsByText(text);
     }
 
     @Override

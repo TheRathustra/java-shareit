@@ -1,13 +1,10 @@
-package ru.practicum.shareit.booking;
+package ru.practicum.shareit.booking.error;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import ru.practicum.shareit.booking.error.InvalidBookingException;
-import ru.practicum.shareit.booking.error.ItemUnavailableException;
-import ru.practicum.shareit.booking.error.UnknownStateException;
-import ru.practicum.shareit.booking.error.UpdateBookingException;
+import ru.practicum.shareit.booking.BookingController;
 
 import java.util.Map;
 

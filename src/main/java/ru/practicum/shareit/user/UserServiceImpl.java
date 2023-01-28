@@ -2,13 +2,14 @@ package ru.practicum.shareit.user;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import ru.practicum.shareit.user.model.User;
 
 import java.util.List;
 
 @Component
 public class UserServiceImpl implements UserService {
 
-    private UserStorage userStorage;
+    private final UserStorage userStorage;
 
     @Autowired
     public UserServiceImpl(UserStorage userStorage) {
@@ -17,14 +18,12 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User add(User user) {
-        User addedUser = userStorage.add(user);
-        return addedUser;
+        return userStorage.add(user);
     }
 
     @Override
     public User update(long id, User user) {
-        User updatedUser = userStorage.update(id, user);
-        return updatedUser;
+        return userStorage.update(id, user);
     }
 
     @Override
@@ -34,14 +33,12 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User getUserById(long id) {
-        User user = userStorage.getUserById(id);
-        return user;
+        return userStorage.getUserById(id);
     }
 
     @Override
     public List<User> getUsers() {
-        List<User> users = userStorage.getUsers();
-        return users;
+        return userStorage.getUsers();
     }
 
 }
