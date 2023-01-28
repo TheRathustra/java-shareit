@@ -62,8 +62,8 @@ public class ItemServiceImpl implements ItemService {
 
         List<Comment> comments = itemStorage.getCommentsByItemId(id);
         if (!comments.isEmpty()) {
-            List<CommentAnswerDto> commentDTO = comments.stream().map(CommentAnswerDto::commentToDto).
-                    collect(Collectors.toList());
+            List<CommentAnswerDto> commentDTO = comments.stream().map(CommentAnswerDto::commentToDto)
+                    .collect(Collectors.toList());
             answer.setComments(commentDTO);
         }
 
