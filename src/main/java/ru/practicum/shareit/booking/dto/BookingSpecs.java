@@ -1,15 +1,16 @@
 package ru.practicum.shareit.booking.dto;
 
 import org.springframework.data.jpa.domain.Specification;
-import ru.practicum.shareit.booking.model.BookingStatus;
 import ru.practicum.shareit.booking.model.Booking;
+import ru.practicum.shareit.booking.model.BookingState;
+import ru.practicum.shareit.booking.model.BookingStatus;
 
 import java.time.LocalDateTime;
 
 public class BookingSpecs {
     public static Specification<Booking> byBooker(Long userId) {
         return (root, query, criteriaBuilder) ->
-                 criteriaBuilder.equal(root.get("booker").get("id"), userId);
+                criteriaBuilder.equal(root.get("booker").get("id"), userId);
 
     }
 
@@ -49,4 +50,20 @@ public class BookingSpecs {
                 criteriaBuilder.greaterThan(root.get("end"), LocalDateTime.now()));
         return spec;
     }
+
+    public static Specification<Booking> byState(BookingState state) {
+        Specification<Booking> spec = Specification.where(null);
+        if (state == BookingState.PAST)
+            spec = spec.and(BookingSpecs.past());
+        if (state == BookingState.FUTURE)
+            spec = spec.and(BookingSpecs.future());
+        if (state == BookingState.CURRENT)
+            spec = spec.and(BookingSpecs.current());
+        if (state == BookingState.WAITING)
+            spec = spec.and(BookingSpecs.byStatus(BookingStatus.WAITING));
+        if (state == BookingState.REJECTED)
+            spec = spec.and(BookingSpecs.byStatus(BookingStatus.REJECTED));
+        return spec;
+    }
+
 }

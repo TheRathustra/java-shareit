@@ -14,8 +14,4 @@ public class ItemRequestDto {
 
     private UserDto requestor;
 
-    public ItemRequestDto(String description, UserDto requestor) {
-        this.description = description;
-        this.requestor = requestor;
-    }
 }

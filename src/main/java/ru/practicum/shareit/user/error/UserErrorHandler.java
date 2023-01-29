@@ -5,11 +5,11 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import ru.practicum.shareit.user.UserController;
-import ru.practicum.shareit.user.UserStorageImp;
+import ru.practicum.shareit.user.UserServiceImpl;
 
 import java.util.Map;
 
-@RestControllerAdvice(assignableTypes = {UserStorageImp.class, UserController.class})
+@RestControllerAdvice(assignableTypes = {UserController.class, UserServiceImpl.class})
 public class UserErrorHandler {
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)

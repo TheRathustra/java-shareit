@@ -5,7 +5,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.booking.dto.BookingAnswer;
 import ru.practicum.shareit.booking.dto.BookingDto;
-import ru.practicum.shareit.booking.dto.BookingMapper;
 import ru.practicum.shareit.booking.error.UnknownStateException;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.BookingState;
@@ -32,12 +31,12 @@ public class BookingController {
     public BookingAnswer create(@RequestHeader Map<String, String> headers, @RequestBody @Valid BookingDto bookingDto) {
         BookingDto.validate(bookingDto);
 
-        Booking booking = BookingMapper.dtoToBooking(bookingDto);
+        Booking booking = BookingDto.dtoToBooking(bookingDto);
 
         Long itemId = bookingDto.getItemId();
         Long userId = getUserFromHeaders(headers);
         Booking newBooking = service.add(booking, userId, itemId);
-        return BookingMapper.bookingAnswer(newBooking);
+        return BookingAnswer.bookingAnswer(newBooking);
     }
 
     @PatchMapping("/{bookingId}")
@@ -45,14 +44,14 @@ public class BookingController {
     public BookingAnswer approveBooking(@RequestHeader Map<String, String> headers, @PathVariable("bookingId") Long bookingId, @RequestParam("approved") Boolean approved) {
         Long userId = getUserFromHeaders(headers);
         Booking booking = service.approveBooking(bookingId, approved, userId);
-        return BookingMapper.bookingAnswer(booking);
+        return BookingAnswer.bookingAnswer(booking);
     }
 
     @GetMapping("/{bookingId}")
     public BookingAnswer getBooking(@RequestHeader Map<String, String> headers, @PathVariable("bookingId") Long bookingId) {
         Long userId = getUserFromHeaders(headers);
         Booking booking = service.getById(bookingId, userId);
-        return BookingMapper.bookingAnswer(booking);
+        return BookingAnswer.bookingAnswer(booking);
     }
 
     @GetMapping()
@@ -65,7 +64,7 @@ public class BookingController {
             throw new UnknownStateException("Unknown state: " + stateDTO);
         }
         List<Booking> bookings = service.getBookingsByState(userId, state);
-        return bookings.stream().map(BookingMapper::bookingAnswer).collect(Collectors.toList());
+        return bookings.stream().map(BookingAnswer::bookingAnswer).collect(Collectors.toList());
     }
 
     @GetMapping("/owner")
@@ -78,7 +77,7 @@ public class BookingController {
             throw new UnknownStateException("Unknown state: " + stateDTO);
         }
         List<Booking> bookings = service.getBookingsByOwner(userId, state);
-        return bookings.stream().map(BookingMapper::bookingAnswer).collect(Collectors.toList());
+        return bookings.stream().map(BookingAnswer::bookingAnswer).collect(Collectors.toList());
     }
 
     private Long getUserFromHeaders(Map<String, String> headers) {

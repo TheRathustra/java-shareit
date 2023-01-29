@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.user.dto.UserDto;
-import ru.practicum.shareit.user.dto.UserMapper;
 import ru.practicum.shareit.user.model.User;
 
 import javax.validation.Valid;
@@ -25,29 +24,29 @@ public class UserController {
     @GetMapping("/{id}")
     public UserDto getUserById(@PathVariable("id") long id) {
         User user = userService.getUserById(id);
-        return UserMapper.userToDto(user);
+        return UserDto.userToDto(user);
     }
 
     @GetMapping
     public List<UserDto> getUsers() {
         List<User> users = userService.getUsers();
-        return users.stream().map(UserMapper::userToDto).collect(Collectors.toList());
+        return users.stream().map(UserDto::userToDto).collect(Collectors.toList());
     }
 
     @PostMapping
     @Transactional
     public UserDto create(@RequestBody @Valid UserDto userDto) {
-        User user = UserMapper.dtoToUser(userDto);
+        User user = UserDto.dtoToUser(userDto);
         User newUser = userService.add(user);
-        return UserMapper.userToDto(newUser);
+        return UserDto.userToDto(newUser);
     }
 
     @PatchMapping("/{id}")
     @Transactional
     public UserDto update(@PathVariable("id") long id, @RequestBody UserDto userDto) {
-        User user = UserMapper.dtoToUser(userDto);
+        User user = UserDto.dtoToUser(userDto);
         User updatedUser = userService.update(id, user);
-        return UserMapper.userToDto(updatedUser);
+        return UserDto.userToDto(updatedUser);
     }
 
     @DeleteMapping("/{id}")

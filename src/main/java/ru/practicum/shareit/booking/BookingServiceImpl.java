@@ -1,40 +1,49 @@
 package ru.practicum.shareit.booking;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import ru.practicum.shareit.booking.dto.BookingRepository;
 import ru.practicum.shareit.booking.dto.BookingSpecs;
 import ru.practicum.shareit.booking.error.ItemUnavailableException;
 import ru.practicum.shareit.booking.error.UpdateBookingException;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.BookingState;
 import ru.practicum.shareit.booking.model.BookingStatus;
-import ru.practicum.shareit.item.ItemStorage;
+import ru.practicum.shareit.item.dto.ItemRepository;
 import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.user.UserService;
 import ru.practicum.shareit.user.error.UndefinedUserException;
 import ru.practicum.shareit.user.model.User;
-import ru.practicum.shareit.user.UserService;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class BookingServiceImpl implements BookingService {
 
-    private final BookingStorage storage;
+    private final BookingRepository repository;
     private final UserService userService;
-    private final ItemStorage itemStorage;
+    private final ItemRepository itemRepository;
 
     @Autowired
-    public BookingServiceImpl(BookingStorage storage, UserService userService, ItemStorage itemStorage) {
-        this.storage = storage;
+    public BookingServiceImpl(BookingRepository repository, UserService userService, ItemRepository itemRepository) {
+        this.repository = repository;
         this.userService = userService;
-        this.itemStorage = itemStorage;
+        this.itemRepository = itemRepository;
     }
 
     @Override
     public Booking add(Booking booking, Long userId, Long itemId) {
 
-        Item item = itemStorage.getItemById(itemId);
+        Optional<Item> itemOptional = itemRepository.findById(itemId);
+
+        if (itemOptional.isEmpty())
+            throw new IllegalArgumentException();
+
+        Item item = itemOptional.get();
+
         if (!item.getAvailable()) {
             throw new ItemUnavailableException();
         }
@@ -48,12 +57,14 @@ public class BookingServiceImpl implements BookingService {
         booking.setItem(item);
         booking.setBooker(user);
 
-        return storage.save(booking);
+        repository.saveAndFlush(booking);
+        return booking;
     }
 
     @Override
     public Booking getById(Long id, Long userId) {
-        Booking booking = storage.getById(id);
+
+        Booking booking = getByIdFromRepository(id);
 
         Long ownerId = booking.getItem().getOwner().getId();
         Long bookerId = booking.getBooker().getId();
@@ -66,7 +77,7 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public Booking approveBooking(Long bookingId, Boolean approved, Long userId) {
-        Booking booking = storage.getById(bookingId);
+        Booking booking = getByIdFromRepository(bookingId);
         Long bookerId = booking.getBooker().getId();
         Long ownerId = booking.getItem().getOwner().getId();
 
@@ -92,7 +103,7 @@ public class BookingServiceImpl implements BookingService {
         }
 
         booking.setStatus(status);
-        booking = storage.save(booking);
+        booking = repository.saveAndFlush(booking);
         return booking;
     }
 
@@ -103,7 +114,8 @@ public class BookingServiceImpl implements BookingService {
             throw new UndefinedUserException();
         }
         Specification<Booking> spec = BookingSpecs.byBooker(userId);
-        return storage.getBookingsByState(spec, state);
+        spec = spec.and(BookingSpecs.byState(state));
+        return repository.findAll(spec, Sort.by(Sort.Direction.DESC,"start"));
     }
 
     @Override
@@ -113,7 +125,45 @@ public class BookingServiceImpl implements BookingService {
             throw new UndefinedUserException();
         }
         Specification<Booking> spec = BookingSpecs.byOwner(userId);
-        return storage.getBookingsByState(spec, state);
+        spec = spec.and(BookingSpecs.byState(state));
+        return repository.findAll(spec, Sort.by(Sort.Direction.DESC,"start"));
+    }
+
+    private Booking getByIdFromRepository(Long id) {
+        Optional<Booking> booking = repository.findById(id);
+        if (booking.isEmpty())
+            throw new IllegalArgumentException();
+        return booking.get();
+    }
+
+    public Booking getLastBooking(Long itemId) {
+        Booking booking = null;
+        Specification<Booking> spec = BookingSpecs.byItem(itemId);
+        spec = spec.and(BookingSpecs.byStatus(BookingStatus.APPROVED));
+        spec = spec.and(BookingSpecs.past());
+        List<Booking> bookings = repository.findAll(spec, Sort.by(Sort.Direction.DESC,"start"));
+        if (!bookings.isEmpty())
+            booking = bookings.get(0);
+        return booking;
+    }
+
+    public Booking getNextBooking(Long itemId) {
+        Booking booking = null;
+        Specification<Booking> spec = BookingSpecs.byItem(itemId);
+        spec = spec.and(BookingSpecs.byStatus(BookingStatus.APPROVED));
+        spec = spec.and(BookingSpecs.future());
+        List<Booking> bookings = repository.findAll(spec, Sort.by(Sort.Direction.ASC,"start"));
+        if (!bookings.isEmpty())
+            booking = bookings.get(0);
+        return booking;
+    }
+
+    public List<Booking> getBookingsByItemIdAndBookerInPast(Long itemId, Long userId) {
+        Specification<Booking> spec = BookingSpecs.byItem(itemId);
+        spec = spec.and(BookingSpecs.byBooker(userId));
+        spec = spec.and(BookingSpecs.byStatus(BookingStatus.APPROVED));
+        spec = spec.and(BookingSpecs.past());
+        return repository.findAll(spec, Sort.by(Sort.Direction.ASC,"start"));
     }
 
 }

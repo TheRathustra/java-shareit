@@ -8,7 +8,6 @@ import ru.practicum.shareit.item.comment.CommentAnswerDto;
 import ru.practicum.shareit.item.comment.CommentDTO;
 import ru.practicum.shareit.item.dto.ItemAnswer;
 import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.item.dto.ItemMapper;
 import ru.practicum.shareit.item.error.EmptyHeaderException;
 import ru.practicum.shareit.item.model.Item;
 
@@ -46,16 +45,16 @@ public class ItemController {
     public List<ItemDto> getItemsByText(HttpServletRequest request) {
         String text = request.getParameter("text").toUpperCase(Locale.ROOT).trim();
         List<Item> items = itemService.getItemsByText(text);
-        return items.stream().map(ItemMapper::itemToDTO).collect(Collectors.toList());
+        return items.stream().map(ItemDto::itemToDTO).collect(Collectors.toList());
     }
 
     @PostMapping
     @Transactional
     public ItemDto create(@RequestHeader Map<String, String> headers, @RequestBody @Valid ItemDto itemDto) {
         Long userId = getUserFromHeaders(headers);
-        Item item = ItemMapper.dtoToItem(itemDto);
+        Item item = ItemDto.dtoToItem(itemDto);
         Item newItem = itemService.add(userId, item);
-        return ItemMapper.itemToDTO(newItem);
+        return ItemDto.itemToDTO(newItem);
     }
 
     @PostMapping("{itemId}/comment")
@@ -71,9 +70,9 @@ public class ItemController {
     @Transactional
     public ItemDto update(@RequestHeader Map<String, String> headers, @PathVariable("id") long id, @RequestBody ItemDto itemDto) {
         Long userId = getUserFromHeaders(headers);
-        Item item = ItemMapper.dtoToItem(itemDto);
+        Item item = ItemDto.dtoToItem(itemDto);
         Item updatedItem = itemService.update(userId, id, item);
-        return ItemMapper.itemToDTO(updatedItem);
+        return ItemDto.itemToDTO(updatedItem);
     }
 
     @DeleteMapping("/{id}")
