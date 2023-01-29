@@ -33,7 +33,7 @@ public class ItemAnswer {
         this.description = item.getDescription();
         this.available = item.getAvailable();
         this.owner = UserDtoItem.userToDTO(item.getOwner());
-        this.request = ItemRequestDtoItem.ItemRequestToDTO(item.getRequest());
+        this.request = ItemRequestDtoItem.itemRequestToDTO(item.getRequest());
         this.comments = new ArrayList<>();
     }
 
@@ -88,7 +88,7 @@ public class ItemAnswer {
 
         private UserDtoItem requestor;
 
-        public static ItemRequestDtoItem ItemRequestToDTO(ItemRequest itemRequest) {
+        public static ItemRequestDtoItem itemRequestToDTO(ItemRequest itemRequest) {
             if (itemRequest == null)
                 return null;
 

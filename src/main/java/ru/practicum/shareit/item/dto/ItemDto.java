@@ -4,8 +4,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.request.ItemRequest;
-import ru.practicum.shareit.request.dto.ItemRequestDto;
-import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.model.User;
 
 import javax.validation.constraints.NotEmpty;
@@ -36,7 +34,7 @@ public class ItemDto {
         this.description = item.getDescription();
         this.available = item.getAvailable();
         this.owner = UserDtoItem.userToDTO(item.getOwner());
-        this.request = ItemRequestDtoItem.ItemRequestToDTO(item.getRequest());
+        this.request = ItemRequestDtoItem.itemRequestToDTO(item.getRequest());
     }
 
     public static Item dtoToItem(ItemDto dto) {
@@ -96,7 +94,7 @@ public class ItemDto {
         private String description;
         private UserDtoItem requestor;
 
-        private static ItemRequestDtoItem ItemRequestToDTO(ItemRequest itemRequest) {
+        private static ItemRequestDtoItem itemRequestToDTO(ItemRequest itemRequest) {
             if (itemRequest == null)
                 return null;
 

@@ -20,6 +20,6 @@ public interface ItemService {
 
     List<Item> getItemsByText(String text);
 
-    Comment addComment(Long userId, Long itenId, Comment comment);
+    Comment addComment(Long userId, Long itemId, Comment comment);
 
 }

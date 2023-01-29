@@ -2,14 +2,10 @@ package ru.practicum.shareit.item.comment;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import ru.practicum.shareit.booking.dto.BookingDto;
-import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.model.User;
 
 import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 @Data
@@ -25,7 +21,7 @@ public class CommentDTO {
 
     public CommentDTO(Comment comment) {
         this.id = comment.getId();
-        this.text =comment.getText();
+        this.text = comment.getText();
         this.item = ItemDtoComment.itemToDTO(comment.getItem());
         this.author = UserDtoComment.userToDTO(comment.getAuthor());
         this.created = comment.getCreated();
