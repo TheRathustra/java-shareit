@@ -11,6 +11,7 @@ import ru.practicum.shareit.item.comment.CommentDTO;
 import ru.practicum.shareit.item.dto.ItemAnswer;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.item.service.ItemService;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;

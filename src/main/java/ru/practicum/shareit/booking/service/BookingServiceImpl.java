@@ -1,18 +1,18 @@
-package ru.practicum.shareit.booking;
+package ru.practicum.shareit.booking.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
-import ru.practicum.shareit.booking.dto.BookingRepository;
-import ru.practicum.shareit.booking.dto.BookingSpecs;
+import ru.practicum.shareit.booking.repository.BookingRepository;
+import ru.practicum.shareit.booking.repository.BookingSpecs;
 import ru.practicum.shareit.booking.error.ItemUnavailableException;
 import ru.practicum.shareit.booking.error.UpdateBookingException;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.BookingState;
 import ru.practicum.shareit.booking.model.BookingStatus;
-import ru.practicum.shareit.item.dto.ItemRepository;
+import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.UserService;
 import ru.practicum.shareit.user.error.UndefinedUserException;

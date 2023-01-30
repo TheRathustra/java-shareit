@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.global.util.Utils;
 import ru.practicum.shareit.global.util.Validator;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
+import ru.practicum.shareit.request.model.ItemRequest;
+import ru.practicum.shareit.request.service.ItemRequestService;
 
 import javax.validation.Valid;
 import java.util.Collections;

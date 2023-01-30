@@ -10,6 +10,7 @@ import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.error.UnknownStateException;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.BookingState;
+import ru.practicum.shareit.booking.service.BookingService;
 import ru.practicum.shareit.global.util.Utils;
 
 import javax.validation.Valid;

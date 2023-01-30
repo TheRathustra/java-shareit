@@ -1,12 +1,13 @@
-package ru.practicum.shareit.request;
+package ru.practicum.shareit.request.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import ru.practicum.shareit.item.ItemService;
+import ru.practicum.shareit.item.service.ItemService;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.request.dto.ItemRequestRepository;
+import ru.practicum.shareit.request.repository.ItemRequestRepository;
 import ru.practicum.shareit.request.error.ItemRequestNotFoundException;
+import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.user.UserService;
 import ru.practicum.shareit.user.model.User;
 
