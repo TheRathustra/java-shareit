@@ -1,6 +1,7 @@
 package ru.practicum.shareit.item;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 import ru.practicum.shareit.booking.BookingService;
 import ru.practicum.shareit.booking.model.Booking;
@@ -10,6 +11,7 @@ import ru.practicum.shareit.item.dto.ItemAnswer;
 import ru.practicum.shareit.item.dto.ItemRepository;
 import ru.practicum.shareit.item.error.CommentWithoutBooking;
 import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.request.dto.ItemRequestRepository;
 import ru.practicum.shareit.user.UserService;
 import ru.practicum.shareit.user.model.User;
 
@@ -26,12 +28,15 @@ public class ItemServiceImpl implements ItemService {
 
     private final CommentRepository commentRepository;
 
+    private final ItemRequestRepository itemRequestRepository;
+
     @Autowired
-    public ItemServiceImpl(ItemRepository itemRepository, UserService userService, BookingService bookingStorage, CommentRepository commentRepository) {
+    public ItemServiceImpl(ItemRepository itemRepository, UserService userService, BookingService bookingStorage, CommentRepository commentRepository, ItemRequestRepository itemRequestRepository) {
         this.repository = itemRepository;
         this.userService = userService;
         this.bookingStorage = bookingStorage;
         this.commentRepository = commentRepository;
+        this.itemRequestRepository = itemRequestRepository;
     }
 
     @Override
@@ -47,14 +52,18 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public Item update(Long userId, Long id, Item item) {
         User user = userService.getUserById(userId);
-        Item itemDB = repository.getById(id);
+        Optional<Item> itemDBOptional = repository.findById(id);
+
+        if (itemDBOptional.isEmpty())
+            throw new IllegalArgumentException();
+
+        Item itemDB = itemDBOptional.get();
 
         if (!itemDB.getOwner().getId().equals(user.getId())) {
             throw new IllegalArgumentException();
         }
 
-        if (itemDB == null)
-            throw new IllegalArgumentException();
+
 
         if (item.getName() != null)
             itemDB.setName(item.getName());
@@ -154,5 +163,10 @@ public class ItemServiceImpl implements ItemService {
         commentRepository.saveAndFlush(comment);
         return comment;
 
+    }
+
+    @Override
+    public List<Item> getItemsByRequestId(Long requestId) {
+        return repository.findAllByRequestId(requestId, Sort.by(Sort.Direction.DESC, "id"));
     }
 }

@@ -1,14 +1,14 @@
 package ru.practicum.shareit.user;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import ru.practicum.shareit.user.dto.UserRepository;
 import ru.practicum.shareit.user.model.User;
 
 import java.util.List;
 import java.util.Optional;
 
-@Component
+@Service
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
@@ -25,18 +25,12 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User update(long id, User user) {
-        User userDB = userRepository.getById(id);
+        User userDB = getUserById(id);
 
-        if (userDB == null) {
-            throw new IllegalArgumentException();
-        }
-
-        if (user.getName() != null) {
+        if (user.getName() != null)
             userDB.setName(user.getName());
-        }
-        if (user.getEmail() != null) {
+        if (user.getEmail() != null)
             userDB.setEmail(user.getEmail());
-        }
 
         userRepository.saveAndFlush(userDB);
 
@@ -45,22 +39,18 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void delete(long id) {
-        User user = userRepository.getById(id);
-        if (user == null) {
-            throw new IllegalArgumentException();
-        }
-
+        User user = getUserById(id);
         userRepository.delete(user);
     }
 
     @Override
     public User getUserById(long id) {
-        Optional<User> userDto = userRepository.findById(id);
+        Optional<User> userOptional = userRepository.findById(id);
 
-        if (userDto.isEmpty()) {
+        if (userOptional.isEmpty())
             throw new IllegalArgumentException();
-        }
-        return userDto.get();
+
+        return userOptional.get();
     }
 
     @Override

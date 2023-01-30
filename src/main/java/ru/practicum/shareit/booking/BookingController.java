@@ -8,7 +8,7 @@ import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.error.UnknownStateException;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.BookingState;
-import ru.practicum.shareit.item.error.EmptyHeaderException;
+import ru.practicum.shareit.global.Utils;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -34,7 +34,7 @@ public class BookingController {
         Booking booking = BookingDto.dtoToBooking(bookingDto);
 
         Long itemId = bookingDto.getItemId();
-        Long userId = getUserFromHeaders(headers);
+        Long userId = Utils.getUserFromHeaders(headers);
         Booking newBooking = service.add(booking, userId, itemId);
         return BookingAnswer.bookingAnswer(newBooking);
     }
@@ -42,21 +42,21 @@ public class BookingController {
     @PatchMapping("/{bookingId}")
     @Transactional
     public BookingAnswer approveBooking(@RequestHeader Map<String, String> headers, @PathVariable("bookingId") Long bookingId, @RequestParam("approved") Boolean approved) {
-        Long userId = getUserFromHeaders(headers);
+        Long userId = Utils.getUserFromHeaders(headers);
         Booking booking = service.approveBooking(bookingId, approved, userId);
         return BookingAnswer.bookingAnswer(booking);
     }
 
     @GetMapping("/{bookingId}")
     public BookingAnswer getBooking(@RequestHeader Map<String, String> headers, @PathVariable("bookingId") Long bookingId) {
-        Long userId = getUserFromHeaders(headers);
+        Long userId = Utils.getUserFromHeaders(headers);
         Booking booking = service.getById(bookingId, userId);
         return BookingAnswer.bookingAnswer(booking);
     }
 
     @GetMapping()
     public List<BookingAnswer> getBookingsByState(@RequestHeader Map<String, String> headers, @RequestParam(name = "state", required = false, defaultValue = "ALL") String stateDTO) {
-        Long userId = getUserFromHeaders(headers);
+        Long userId = Utils.getUserFromHeaders(headers);
         BookingState state;
         try {
             state = BookingState.valueOf(stateDTO);
@@ -69,7 +69,7 @@ public class BookingController {
 
     @GetMapping("/owner")
     public List<BookingAnswer> getBookingsByOwner(@RequestHeader Map<String, String> headers, @RequestParam(name = "state", required = false, defaultValue = "ALL") String stateDTO) {
-        Long userId = getUserFromHeaders(headers);
+        Long userId = Utils.getUserFromHeaders(headers);
         BookingState state;
         try {
             state = BookingState.valueOf(stateDTO);
@@ -78,14 +78,6 @@ public class BookingController {
         }
         List<Booking> bookings = service.getBookingsByOwner(userId, state);
         return bookings.stream().map(BookingAnswer::bookingAnswer).collect(Collectors.toList());
-    }
-
-    private Long getUserFromHeaders(Map<String, String> headers) {
-        String userId = headers.get("x-sharer-user-id");
-        if (userId == null) {
-            throw new EmptyHeaderException();
-        }
-        return Long.parseLong(userId);
     }
 
 }

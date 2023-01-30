@@ -2,7 +2,6 @@ package ru.practicum.shareit.item.model;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import ru.practicum.shareit.request.ItemRequest;
 import ru.practicum.shareit.user.model.User;
 
 import javax.persistence.*;
@@ -30,8 +29,7 @@ public class Item {
     @JoinColumn(name = "booker_id", referencedColumnName = "id")
     private User owner;
 
-    @OneToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "request_id", referencedColumnName = "id")
-    private ItemRequest request;
+    @Column(name = "request_id")
+    private Long requestId;
 
 }
