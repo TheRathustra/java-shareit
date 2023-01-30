@@ -1,9 +1,10 @@
 package ru.practicum.shareit.item;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.shareit.global.Utils;
+import ru.practicum.shareit.global.util.Utils;
 import ru.practicum.shareit.item.comment.Comment;
 import ru.practicum.shareit.item.comment.CommentAnswerDto;
 import ru.practicum.shareit.item.comment.CommentDTO;
@@ -30,27 +31,38 @@ public class ItemController {
     }
 
     @GetMapping("/{id}")
-    public ItemAnswer getItemById(@RequestHeader Map<String, String> headers, @PathVariable("id") Long itemId) {
+    public ItemAnswer getItemById(@RequestHeader Map<String, String> headers,
+                                  @PathVariable("id") Long itemId) {
         Long userId = Utils.getUserFromHeaders(headers);
         return itemService.getItemById(itemId, userId);
     }
 
     @GetMapping
-    public List<ItemAnswer> getItems(@RequestHeader Map<String, String> headers) {
+    public List<ItemAnswer> getItems(@RequestHeader Map<String, String> headers,
+                                     @RequestParam(name = "from", required = false) String fromStr,
+                                     @RequestParam(name = "size", required = false) String sizeStr) {
+
+        Pageable pageRequest = Utils.getPageRequest(fromStr, sizeStr);
         Long userId = Utils.getUserFromHeaders(headers);
-        return itemService.getItems(userId);
+        return itemService.getItems(userId, pageRequest);
     }
 
     @GetMapping("/search")
-    public List<ItemDto> getItemsByText(HttpServletRequest request) {
+    public List<ItemDto> getItemsByText(HttpServletRequest request,
+                                        @RequestParam(name = "from", required = false) String fromStr,
+                                        @RequestParam(name = "size", required = false) String sizeStr) {
+
+        Pageable pageRequest = Utils.getPageRequest(fromStr, sizeStr);
+
         String text = request.getParameter("text").toUpperCase(Locale.ROOT).trim();
-        List<Item> items = itemService.getItemsByText(text);
+        List<Item> items = itemService.getItemsByText(text, pageRequest);
         return items.stream().map(ItemDto::itemToDTO).collect(Collectors.toList());
     }
 
     @PostMapping
     @Transactional
-    public ItemDto create(@RequestHeader Map<String, String> headers, @RequestBody @Valid ItemDto itemDto) {
+    public ItemDto create(@RequestHeader Map<String, String> headers,
+                          @RequestBody @Valid ItemDto itemDto) {
         Long userId = Utils.getUserFromHeaders(headers);
         Item item = ItemDto.dtoToItem(itemDto);
         Item newItem = itemService.add(userId, item);
@@ -59,7 +71,9 @@ public class ItemController {
 
     @PostMapping("{itemId}/comment")
     @Transactional
-    public CommentAnswerDto addComment(@RequestHeader Map<String, String> headers, @PathVariable("itemId") Long itemId,  @RequestBody @Valid CommentDTO commentDTO) {
+    public CommentAnswerDto addComment(@RequestHeader Map<String, String> headers,
+                                       @PathVariable("itemId") Long itemId,
+                                       @RequestBody @Valid CommentDTO commentDTO) {
         Long userId = Utils.getUserFromHeaders(headers);
         Comment comment = CommentDTO.dtoToComment(commentDTO);
         Comment newComment = itemService.addComment(userId, itemId, comment);
@@ -68,7 +82,9 @@ public class ItemController {
 
     @PatchMapping("/{id}")
     @Transactional
-    public ItemDto update(@RequestHeader Map<String, String> headers, @PathVariable("id") long id, @RequestBody ItemDto itemDto) {
+    public ItemDto update(@RequestHeader Map<String, String> headers,
+                          @PathVariable("id") long id,
+                          @RequestBody ItemDto itemDto) {
         Long userId = Utils.getUserFromHeaders(headers);
         Item item = ItemDto.dtoToItem(itemDto);
         Item updatedItem = itemService.update(userId, id, item);

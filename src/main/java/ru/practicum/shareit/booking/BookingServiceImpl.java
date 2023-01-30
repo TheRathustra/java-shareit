@@ -1,6 +1,7 @@
 package ru.practicum.shareit.booking;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -108,25 +109,41 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<Booking> getBookingsByState(Long userId, BookingState state) {
+    public List<Booking> getBookingsByState(Long userId, BookingState state, Pageable pageRequest) {
         User user = userService.getUserById(userId);
         if (user == null) {
             throw new UndefinedUserException();
         }
         Specification<Booking> spec = BookingSpecs.byBooker(userId);
         spec = spec.and(BookingSpecs.byState(state));
-        return repository.findAll(spec, Sort.by(Sort.Direction.DESC,"start"));
+
+        List<Booking> bookings;
+        if (pageRequest == null) {
+            bookings = repository.findAll(spec, Sort.by(Sort.Direction.DESC,"start"));
+        } else {
+            bookings = repository.findAll(spec, pageRequest).toList();
+        }
+
+        return bookings;
     }
 
     @Override
-    public List<Booking> getBookingsByOwner(Long userId, BookingState state) {
+    public List<Booking> getBookingsByOwner(Long userId, BookingState state, Pageable pageRequest) {
         User user = userService.getUserById(userId);
         if (user == null) {
             throw new UndefinedUserException();
         }
         Specification<Booking> spec = BookingSpecs.byOwner(userId);
         spec = spec.and(BookingSpecs.byState(state));
-        return repository.findAll(spec, Sort.by(Sort.Direction.DESC,"start"));
+
+        List<Booking> bookings;
+        if (pageRequest == null) {
+            bookings = repository.findAll(spec, Sort.by(Sort.Direction.DESC,"start"));
+        } else {
+            bookings = repository.findAll(spec, pageRequest).toList();
+        }
+
+        return bookings;
     }
 
     private Booking getByIdFromRepository(Long id) {

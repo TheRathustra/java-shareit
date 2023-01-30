@@ -1,6 +1,7 @@
 package ru.practicum.shareit.item;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 import ru.practicum.shareit.booking.BookingService;
@@ -11,7 +12,6 @@ import ru.practicum.shareit.item.dto.ItemAnswer;
 import ru.practicum.shareit.item.dto.ItemRepository;
 import ru.practicum.shareit.item.error.CommentWithoutBooking;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.request.dto.ItemRequestRepository;
 import ru.practicum.shareit.user.UserService;
 import ru.practicum.shareit.user.model.User;
 
@@ -28,15 +28,12 @@ public class ItemServiceImpl implements ItemService {
 
     private final CommentRepository commentRepository;
 
-    private final ItemRequestRepository itemRequestRepository;
-
     @Autowired
-    public ItemServiceImpl(ItemRepository itemRepository, UserService userService, BookingService bookingStorage, CommentRepository commentRepository, ItemRequestRepository itemRequestRepository) {
+    public ItemServiceImpl(ItemRepository itemRepository, UserService userService, BookingService bookingStorage, CommentRepository commentRepository) {
         this.repository = itemRepository;
         this.userService = userService;
         this.bookingStorage = bookingStorage;
         this.commentRepository = commentRepository;
-        this.itemRequestRepository = itemRequestRepository;
     }
 
     @Override
@@ -113,9 +110,14 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<ItemAnswer> getItems(Long userId) {
+    public List<ItemAnswer> getItems(Long userId, Pageable pageRequest) {
 
-        List<Item> items = repository.findAllByUser(userId);
+        List<Item> items;
+        if (pageRequest == null) {
+            items = repository.findAllByUser(userId);
+        } else {
+            items = repository.findAllByUserByPage(userId, pageRequest).toList();
+        }
 
         List<ItemAnswer> itemAnswer = new ArrayList<>();
         for (Item item : items) {
@@ -136,11 +138,19 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<Item> getItemsByText(String text) {
+    public List<Item> getItemsByText(String text, Pageable pageRequest) {
         if (text.isEmpty()) {
             return new ArrayList<>();
         }
-        return repository.search(text);
+
+        List<Item> items;
+        if (pageRequest == null) {
+            items = repository.search(text);
+        } else {
+            items = repository.searchByPage(text, pageRequest).toList();
+        }
+
+        return items;
     }
 
     @Override

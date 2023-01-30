@@ -1,13 +1,16 @@
 package ru.practicum.shareit.request;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.shareit.global.Utils;
+import ru.practicum.shareit.global.util.Utils;
+import ru.practicum.shareit.global.util.Validator;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 
 import javax.validation.Valid;
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -25,7 +28,8 @@ public class ItemRequestController {
 
     @PostMapping
     @Transactional
-    public ItemRequestDto create(@RequestHeader Map<String, String> headers, @RequestBody @Valid ItemRequestDto requestDto) {
+    public ItemRequestDto create(@RequestHeader Map<String, String> headers,
+                                 @RequestBody @Valid ItemRequestDto requestDto) {
         Long userId = Utils.getUserFromHeaders(headers);
         ItemRequest request = ItemRequestDto.dtoToInstance(requestDto);
         ItemRequest newItemRequest = itemRequestService.add(request, userId);
@@ -40,22 +44,24 @@ public class ItemRequestController {
     }
 
     @GetMapping("/all")
-    public List<ItemRequestDto> getAllItemRequests(@RequestHeader Map<String, String> headers, @RequestParam(name = "from", required = false, defaultValue = "0") String fromStr, @RequestParam(name = "size", required = false) String sizeStr) {
+    public List<ItemRequestDto> getAllItemRequests(@RequestHeader Map<String, String> headers,
+                                                   @RequestParam(name = "from", required = false) String fromStr,
+                                                   @RequestParam(name = "size", required = false) String sizeStr) {
 
-        if (fromStr == null && sizeStr == null)
-            return new ArrayList<>();
+        if (Validator.isEmptyPageSize(fromStr, sizeStr))
+            return Collections.emptyList();
 
         Long userId = Utils.getUserFromHeaders(headers);
-        int from = Integer.parseInt(fromStr);
-        int size = Integer.parseInt(sizeStr);
-        List<ItemRequest> requests = itemRequestService.getAllItemRequests(userId, from, size);
+        Pageable pageRequest = Utils.getPageRequest(fromStr, sizeStr, Sort.by(Sort.Direction.DESC,"created"));
+        List<ItemRequest> requests = itemRequestService.getAllItemRequests(userId, pageRequest);
 
         return requests.stream().map(ItemRequestDto::instanceToDto).collect(Collectors.toList());
 
     }
 
     @GetMapping("/{requestId}")
-    public ItemRequestDto getItemRequestById(@RequestHeader Map<String, String> headers, @PathVariable("requestId") Long id) {
+    public ItemRequestDto getItemRequestById(@RequestHeader Map<String, String> headers,
+                                             @PathVariable("requestId") Long id) {
         Long userId = Utils.getUserFromHeaders(headers);
         ItemRequest request = itemRequestService.getItemRequestById(userId, id);
         return ItemRequestDto.instanceToDto(request);
