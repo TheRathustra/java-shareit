@@ -1,18 +1,19 @@
-package ru.practicum.shareit.user;
+package ru.practicum.shareit.user.error;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import ru.practicum.shareit.user.error.DuplicateEmailException;
+import ru.practicum.shareit.user.UserController;
+import ru.practicum.shareit.user.UserServiceImpl;
 
 import java.util.Map;
 
-@RestControllerAdvice(assignableTypes = {UserController.class, UserStorageImp.class})
+@RestControllerAdvice(assignableTypes = {UserController.class, UserServiceImpl.class})
 public class UserErrorHandler {
     @ExceptionHandler
-    @ResponseStatus(HttpStatus.CONFLICT)
-    public Map<String, String> handleIllegalArgumentException(final DuplicateEmailException e) {
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public Map<String, String> handleIllegalArgumentException(final IllegalArgumentException e) {
         return Map.of("error", "IllegalArgumentException", "errorMessage", e.getMessage() != null ? e.getMessage() : "");
     }
 }

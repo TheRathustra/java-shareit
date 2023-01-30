@@ -1,11 +1,11 @@
-package ru.practicum.shareit.item;
+package ru.practicum.shareit.item.error;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import ru.practicum.shareit.item.error.EmptyHeaderException;
-import ru.practicum.shareit.item.error.UserNotFoundException;
+import ru.practicum.shareit.item.ItemController;
+import ru.practicum.shareit.item.ItemServiceImpl;
 
 import java.util.Map;
 
@@ -22,6 +22,12 @@ public class ItemErrorHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Map<String, String> handleEmptyHeaderException(final EmptyHeaderException e) {
         return Map.of("error", "EmptyHeaderException", "errorMessage", e.getMessage() != null ? e.getMessage() : "");
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public Map<String, String> handleCommentWithoutBooking(final CommentWithoutBooking e) {
+        return Map.of("error", "CommentWithoutBooking", "errorMessage", e.getMessage() != null ? e.getMessage() : "");
     }
 
 }

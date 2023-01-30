@@ -2,55 +2,70 @@ package ru.practicum.shareit.user;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import ru.practicum.shareit.user.dto.UserDto;
-import ru.practicum.shareit.user.dto.UserMapper;
+import ru.practicum.shareit.user.dto.UserRepository;
+import ru.practicum.shareit.user.model.User;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Component
 public class UserServiceImpl implements UserService {
 
-    private UserStorage userStorage;
+    private final UserRepository userRepository;
 
     @Autowired
-    public UserServiceImpl(UserStorage userStorage) {
-        this.userStorage = userStorage;
+    public UserServiceImpl(UserRepository repository) {
+        this.userRepository = repository;
     }
 
     @Override
-    public UserDto add(UserDto userDto) {
-        User user = UserMapper.dtoToUser(userDto);
-        User addedUser = userStorage.add(user);
-        return UserMapper.userToDto(addedUser);
+    public User add(User user) {
+        return userRepository.saveAndFlush(user);
     }
 
     @Override
-    public UserDto update(long id, UserDto userDto) {
-        User user = UserMapper.dtoToUser(userDto);
-        User updatedUser = userStorage.update(id, user);
-        return UserMapper.userToDto(updatedUser);
+    public User update(long id, User user) {
+        User userDB = userRepository.getById(id);
+
+        if (userDB == null) {
+            throw new IllegalArgumentException();
+        }
+
+        if (user.getName() != null) {
+            userDB.setName(user.getName());
+        }
+        if (user.getEmail() != null) {
+            userDB.setEmail(user.getEmail());
+        }
+
+        userRepository.saveAndFlush(userDB);
+
+        return userDB;
     }
 
     @Override
     public void delete(long id) {
-        userStorage.delete(id);
-    }
-
-    @Override
-    public UserDto getUserById(long id) {
-        User user = userStorage.getUserById(id);
-        return UserMapper.userToDto(user);
-    }
-
-    @Override
-    public List<UserDto> getUsers() {
-        List<User> users = userStorage.getUsers();
-        List<UserDto> usersDTO = new ArrayList<>();
-        for (User user : users) {
-            usersDTO.add(UserMapper.userToDto(user));
+        User user = userRepository.getById(id);
+        if (user == null) {
+            throw new IllegalArgumentException();
         }
-        return usersDTO;
+
+        userRepository.delete(user);
+    }
+
+    @Override
+    public User getUserById(long id) {
+        Optional<User> userDto = userRepository.findById(id);
+
+        if (userDto.isEmpty()) {
+            throw new IllegalArgumentException();
+        }
+        return userDto.get();
+    }
+
+    @Override
+    public List<User> getUsers() {
+        return userRepository.findAll();
     }
 
 }
