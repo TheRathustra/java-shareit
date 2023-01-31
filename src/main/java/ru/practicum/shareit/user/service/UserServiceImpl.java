@@ -1,8 +1,8 @@
-package ru.practicum.shareit.user;
+package ru.practicum.shareit.user.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.practicum.shareit.user.dto.UserRepository;
+import ru.practicum.shareit.user.repository.UserRepository;
 import ru.practicum.shareit.user.model.User;
 
 import java.util.List;
@@ -24,7 +24,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User update(long id, User user) {
+    public User update(Long id, User user) {
         User userDB = getUserById(id);
 
         if (user.getName() != null)
@@ -38,17 +38,17 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void delete(long id) {
+    public void delete(Long id) {
         User user = getUserById(id);
         userRepository.delete(user);
     }
 
     @Override
-    public User getUserById(long id) {
+    public User getUserById(Long id) {
         Optional<User> userOptional = userRepository.findById(id);
 
         if (userOptional.isEmpty())
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("Пользователь с ID=" + id + " не найден!");
 
         return userOptional.get();
     }

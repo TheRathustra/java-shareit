@@ -12,7 +12,7 @@ import ru.practicum.shareit.item.dto.ItemAnswer;
 import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.item.error.CommentWithoutBooking;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.user.UserService;
+import ru.practicum.shareit.user.service.UserService;
 import ru.practicum.shareit.user.model.User;
 
 import java.util.ArrayList;
@@ -59,8 +59,6 @@ public class ItemServiceImpl implements ItemService {
         if (!itemDB.getOwner().getId().equals(user.getId())) {
             throw new IllegalArgumentException();
         }
-
-
 
         if (item.getName() != null)
             itemDB.setName(item.getName());
