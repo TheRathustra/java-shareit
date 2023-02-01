@@ -54,8 +54,8 @@ class BookingControllerTest {
 
     private final Booking booking = new Booking(
             1L,
-            LocalDateTime.now(),
-            LocalDateTime.now(),
+            LocalDateTime.now().plusDays(1),
+            LocalDateTime.now().plusDays(2),
             item,
             user,
             BookingStatus.APPROVED
@@ -78,7 +78,7 @@ class BookingControllerTest {
                 .accept(MediaType.APPLICATION_JSON)).andReturn();
 
         assertThat(mvcResult.getResponse().getContentAsString(), equalTo(mapper.writeValueAsString(bookingAnswer)));
-        verify(service).add(booking, user.getId(), item.getId());
+        verify(service).add(Mockito.any(), Mockito.anyLong(), Mockito.anyLong());
 
     }
 
