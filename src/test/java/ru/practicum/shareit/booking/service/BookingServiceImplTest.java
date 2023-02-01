@@ -115,7 +115,26 @@ class BookingServiceImplTest {
 
 
     @Test
-    void getById() {
+    void getById_whenOwnerNotEqualsUserId_thenThrowIllegalArgumentException() {
+        when(repository.findById(Mockito.any())).thenReturn(Optional.of(booking));
+        Assertions.assertThrows(
+                IllegalArgumentException.class,
+                () -> service.getById(booking.getId(), user2.getId()));
+    }
+
+    @Test
+    void getById_whenNotFoundBooking_thenThrowIllegalArgumentException() {
+        when(repository.findById(Mockito.any())).thenReturn(Optional.empty());
+        Assertions.assertThrows(
+                IllegalArgumentException.class,
+                () -> service.getById(booking.getId(), user.getId()));
+    }
+
+    @Test
+    void getById_whenValid_thenReturnBooking() {
+        when(repository.findById(Mockito.any())).thenReturn(Optional.of(booking));
+        Booking actualBooking = service.getById(booking.getId(), user.getId());
+        assertThat(actualBooking, equalTo(booking));
     }
 
     @Test
