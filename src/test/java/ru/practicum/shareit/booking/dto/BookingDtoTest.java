@@ -48,7 +48,7 @@ class BookingDtoTest {
 
     @Test
     @SneakyThrows
-    void BookingDtoTest() {
+    void bookingDtoToJsonTest() {
         JsonContent<BookingDto> result = json.write(bookingDto);
 
         assertThat(result).hasJsonPath("$.id");

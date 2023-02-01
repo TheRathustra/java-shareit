@@ -22,7 +22,7 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class UserServiceImplTest {
 
-    private User user = new User(
+    private final User user = new User(
             1L,
             "userName",
             "user@email.com"
@@ -57,6 +57,7 @@ class UserServiceImplTest {
         verify(userRepository).findById(1L);
         assertThat(actualUser, equalTo(user));
     }
+
     @Test
     void add_WhenExistingEmail_thenThrowDataIntegrityViolationException() {
         when(userRepository.saveAndFlush(user))

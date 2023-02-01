@@ -19,9 +19,10 @@ class UserDtoTest {
             1L,
             "UserName",
             "user1@ya.ru");
+
     @Test
     @SneakyThrows
-    void UserDtoTest() {
+    void userDtoToJsonTest() {
         JsonContent<UserDto> result = json.write(userDto);
 
         assertThat(result).hasJsonPath("$.id");

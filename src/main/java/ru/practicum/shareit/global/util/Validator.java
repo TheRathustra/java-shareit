@@ -9,7 +9,7 @@ public class Validator {
             throw new InvalidPageSizeException();
     }
 
-    public static Boolean isEmptyPageSize(String from , String size) {
+    public static Boolean isEmptyPageSize(String from, String size) {
         return from == null && size == null;
     }
 
