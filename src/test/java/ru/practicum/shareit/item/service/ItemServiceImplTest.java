@@ -7,22 +7,24 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.service.BookingService;
+import ru.practicum.shareit.item.comment.Comment;
 import ru.practicum.shareit.item.comment.CommentRepository;
 import ru.practicum.shareit.item.dto.ItemAnswer;
-import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.service.UserService;
 
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class ItemServiceImplTest {
@@ -39,13 +41,13 @@ class ItemServiceImplTest {
     @Mock
     private CommentRepository commentRepository;
 
-    private User user = new User(
+    private final User user = new User(
             1L,
             "userName",
             "user@email.com"
     );
 
-    private Item item = new Item(
+    private final Item item = new Item(
             1L,
             "test",
             "test",
@@ -53,9 +55,17 @@ class ItemServiceImplTest {
             1L
     );
 
-    private ItemDto itemDto = ItemDto.itemToDTO(item);
+    private final Comment comment = new Comment(
+            1L,
+            "test",
+            item,
+            user,
+            LocalDateTime.now()
+    );
 
-    private ItemAnswer itemAnswer = ItemAnswer.itemToAnswerDTO(item);
+    private final Booking booking = new Booking();
+
+    private final ItemAnswer itemAnswer = ItemAnswer.itemToAnswerDTO(item);
 
     @Test
     void add_whenValid_thenReturnItem() {
@@ -146,14 +156,51 @@ class ItemServiceImplTest {
     }
 
     @Test
-    void getItemsByText() {
+    void getItemsByText_whenTextIsNotEmpty_thenReturnListOfItems() {
+
+        String text = "test";
+        when(repository.search(Mockito.anyString())).thenReturn(List.of(item));
+        List<Item> actualItems = itemService.getItemsByText(text, null);
+
+        assertThat(actualItems, equalTo(List.of(item)));
     }
 
     @Test
-    void addComment() {
+    void getItemsByText_whenTextIsEmpty_thenReturnEmptyList() {
+
+        String text = "";
+        List<Item> actualItems = itemService.getItemsByText(text, null);
+
+        assertThat(actualItems, equalTo(Collections.emptyList()));
+        verify(repository, never()).search(text);
+
+    }
+
+    @Test
+    void addComment_whenItemNotFound_thenThrowIllegalArgumentException() {
+        when(repository.findById(Mockito.anyLong())).thenReturn(Optional.empty());
+
+        Assertions.assertThrows(
+                IllegalArgumentException.class,
+                () -> itemService.addComment(user.getId(), item.getId(), new Comment()));
+    }
+
+    @Test
+    void addComment_whenValid_thenReturnComment() {
+        when(repository.findById(Mockito.anyLong())).thenReturn(Optional.of(item));
+        when(userService.getUserById(Mockito.anyLong())).thenReturn(user);
+        when(bookingStorage.getBookingsByItemIdAndBookerInPast(Mockito.anyLong(), Mockito.anyLong()))
+                .thenReturn(List.of(booking));
+
+        Comment actualComment = itemService.addComment(user.getId(), item.getId(), comment);
+        assertThat(actualComment, equalTo(comment));
+        verify(commentRepository).saveAndFlush(comment);
     }
 
     @Test
     void getItemsByRequestId() {
+        when(repository.findAllByRequestId(Mockito.anyLong(), Mockito.any())).thenReturn(List.of(item));
+        List<Item> actualList = itemService.getItemsByRequestId(1L);
+        assertThat(actualList, equalTo(List.of(item)));
     }
 }

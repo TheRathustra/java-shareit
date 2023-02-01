@@ -1,5 +1,6 @@
 package ru.practicum.shareit.request.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import ru.practicum.shareit.item.model.Item;
@@ -14,6 +15,7 @@ import java.util.stream.Collectors;
 
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
 public class ItemRequestDto {
     private Long id;
     @NotEmpty
@@ -57,6 +59,7 @@ public class ItemRequestDto {
     }
 
     @Data
+    @NoArgsConstructor
     public static class UserDtoItemRequest {
         private Long id;
         private String name;
@@ -88,6 +91,7 @@ public class ItemRequestDto {
     }
 
     @Data
+    @NoArgsConstructor
     public static class ItemDtoRequest {
         private Long id;
         private String name;

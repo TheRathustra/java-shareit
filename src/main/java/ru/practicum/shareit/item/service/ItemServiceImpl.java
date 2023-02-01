@@ -16,6 +16,7 @@ import ru.practicum.shareit.user.service.UserService;
 import ru.practicum.shareit.user.model.User;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -138,7 +139,7 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public List<Item> getItemsByText(String text, Pageable pageRequest) {
         if (text.isEmpty()) {
-            return new ArrayList<>();
+            return Collections.emptyList();
         }
 
         List<Item> items;

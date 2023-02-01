@@ -1,5 +1,6 @@
 package ru.practicum.shareit.user.dto;
 
+import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.json.JsonTest;
@@ -19,7 +20,8 @@ class UserDtoTest {
             "UserName",
             "user1@ya.ru");
     @Test
-    void UserDtoTest() throws Exception {
+    @SneakyThrows
+    void UserDtoTest() {
         JsonContent<UserDto> result = json.write(userDto);
 
         assertThat(result).hasJsonPath("$.id");
