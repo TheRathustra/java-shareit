@@ -51,7 +51,8 @@ class ItemServiceImplTest {
             1L,
             "test",
             "test",
-            true, user,
+            true,
+            user,
             1L
     );
 
