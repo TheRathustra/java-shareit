@@ -45,7 +45,7 @@ class CommentDTOTest {
 
     @Test
     @SneakyThrows
-    void UserDtoTest() {
+    void CommentDtoToJsonTest() {
         JsonContent<CommentDTO> result = json.write(commentDTO);
 
         assertThat(result).hasJsonPath("$.id");
