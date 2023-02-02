@@ -131,4 +131,5 @@ class ItemRequestControllerTest {
         assertThat(mvcResult.getResponse().getContentAsString(), equalTo(mapper.writeValueAsString(itemRequestDto)));
         verify(itemRequestService).getItemRequestById(user.getId(), itemRequest.getId());
     }
+
 }

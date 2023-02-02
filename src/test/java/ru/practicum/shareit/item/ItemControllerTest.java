@@ -10,6 +10,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import ru.practicum.shareit.item.comment.Comment;
 import ru.practicum.shareit.item.dto.ItemAnswer;
 import ru.practicum.shareit.item.dto.ItemDto;
@@ -39,13 +40,13 @@ class ItemControllerTest {
     @Autowired
     private ObjectMapper mapper;
 
-    private User user = new User(
+    private final User user = new User(
             1L,
             "userName",
             "user@email.ru"
     );
 
-    private Item item = new Item(
+    private final Item item = new Item(
             1L,
             "test",
             "test",
@@ -167,4 +168,10 @@ class ItemControllerTest {
         verify(itemService).update(Mockito.anyLong(), Mockito.anyLong(), Mockito.any());
     }
 
+    @Test
+    @SneakyThrows
+    void delete() {
+        mvc.perform(MockMvcRequestBuilders.delete("/items/{id}", item.getId()))
+                .andExpect(status().isOk());
+    }
 }
