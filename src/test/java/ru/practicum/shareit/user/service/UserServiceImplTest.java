@@ -12,12 +12,12 @@ import org.springframework.dao.DataIntegrityViolationException;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class UserServiceImplTest {
@@ -83,6 +83,20 @@ class UserServiceImplTest {
         User actualUser = userService.update(user.getId(), user);
         assertThat(user, equalTo(actualUser));
         verify(userRepository).saveAndFlush(user);
+    }
+
+    @Test
+    void getUsers_thenReturnAllUsers() {
+        when(userRepository.findAll()).thenReturn(List.of(user));
+        List<User> actualUsers = userRepository.findAll();
+        assertThat(actualUsers, equalTo(List.of(user)));
+    }
+
+    @Test
+    void delete() {
+        when(userRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(user));
+        userService.delete(user.getId());
+        verify(userRepository).delete(user);
     }
 
 }
