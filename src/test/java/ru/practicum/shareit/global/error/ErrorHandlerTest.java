@@ -10,6 +10,7 @@ import static org.hamcrest.Matchers.hasKey;
 class ErrorHandlerTest {
 
     private final ErrorHandler handler = new ErrorHandler();
+
     @Test
     void handleIllegalArgumentException() {
         Map<String, String> stringStringMap = handler.handleIllegalArgumentException(new IllegalArgumentException());
