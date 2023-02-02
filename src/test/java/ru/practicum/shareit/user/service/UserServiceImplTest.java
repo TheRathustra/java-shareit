@@ -50,7 +50,7 @@ class UserServiceImplTest {
     }
 
     @Test
-    void getUserById_whenValid_thenReturnUser() {
+    void getUserById() {
         when(userRepository.findById(user.getId()))
                 .thenReturn(Optional.of(user));
         User actualUser = userService.getUserById(1L);
@@ -68,7 +68,7 @@ class UserServiceImplTest {
     }
 
     @Test
-    void add_whenValid_thenReturnUser() {
+    void add() {
         when(userRepository.saveAndFlush(user)).thenReturn(user);
         User actualUser = userService.add(user);
         assertThat(user, equalTo(actualUser));
@@ -76,7 +76,7 @@ class UserServiceImplTest {
     }
 
     @Test
-    void update_whenValid_thenReturnUser() {
+    void update() {
         when(userRepository.saveAndFlush(user)).thenReturn(user);
         when(userRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(user));
 
@@ -86,10 +86,11 @@ class UserServiceImplTest {
     }
 
     @Test
-    void getUsers_thenReturnAllUsers() {
+    void getUsers() {
         when(userRepository.findAll()).thenReturn(List.of(user));
-        List<User> actualUsers = userRepository.findAll();
+        List<User> actualUsers = userService.getUsers();
         assertThat(actualUsers, equalTo(List.of(user)));
+        verify(userRepository).findAll();
     }
 
     @Test

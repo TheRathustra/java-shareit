@@ -18,12 +18,12 @@ import ru.practicum.shareit.user.model.User;
 
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
@@ -113,6 +113,23 @@ class ItemRequestControllerTest {
 
         assertThat(mvcResult.getResponse().getContentAsString(), equalTo(mapper.writeValueAsString(List.of(itemRequestDto))));
         verify(itemRequestService).getAllItemRequests(Mockito.anyLong(), Mockito.any());
+    }
+
+    @Test
+    @SneakyThrows
+    void getAllItemRequests_whenEmptyPageSize_thenReturnEmptyList() {
+        when(itemRequestService.getAllItemRequests(Mockito.anyLong(), Mockito.any()))
+                .thenReturn(List.of(itemRequest));
+
+
+        MvcResult mvcResult = mvc.perform(get("/requests/all")
+                .header("x-sharer-user-id", user.getId())
+                .characterEncoding(StandardCharsets.UTF_8)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)).andReturn();
+
+        assertThat(mvcResult.getResponse().getContentAsString(), equalTo(mapper.writeValueAsString(Collections.emptyList())));
+        verify(itemRequestService, never()).getAllItemRequests(Mockito.anyLong(), Mockito.any());
     }
 
     @Test

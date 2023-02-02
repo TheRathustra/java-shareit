@@ -69,7 +69,7 @@ class ItemServiceImplTest {
     private final ItemAnswer itemAnswer = ItemAnswer.itemToAnswerDTO(item);
 
     @Test
-    void add_whenValid_thenReturnItem() {
+    void add() {
 
         when(userService.getUserById(Mockito.anyLong())).thenReturn(user);
         when(repository.saveAndFlush(Mockito.any())).thenReturn(item);
@@ -80,7 +80,7 @@ class ItemServiceImplTest {
     }
 
     @Test
-    void update_whenValid_thenReturnItem() {
+    void update() {
 
         when(userService.getUserById(Mockito.anyLong())).thenReturn(user);
         when(repository.findById(Mockito.anyLong())).thenReturn(Optional.of(item));
@@ -119,7 +119,7 @@ class ItemServiceImplTest {
     }
 
     @Test
-    void getItemById_whenValid_thenReturnItem() {
+    void getItemById() {
 
         when(repository.findById(Mockito.anyLong())).thenReturn(Optional.of(item));
         when(bookingStorage.getLastBooking(Mockito.anyLong())).thenReturn(null);
@@ -157,7 +157,7 @@ class ItemServiceImplTest {
     }
 
     @Test
-    void getItemsByText_whenTextIsNotEmpty_thenReturnListOfItems() {
+    void getItemsByText() {
 
         String text = "test";
         when(repository.search(Mockito.anyString())).thenReturn(List.of(item));
@@ -187,7 +187,7 @@ class ItemServiceImplTest {
     }
 
     @Test
-    void addComment_whenValid_thenReturnComment() {
+    void addComment() {
         when(repository.findById(Mockito.anyLong())).thenReturn(Optional.of(item));
         when(userService.getUserById(Mockito.anyLong())).thenReturn(user);
         when(bookingStorage.getBookingsByItemIdAndBookerInPast(Mockito.anyLong(), Mockito.anyLong()))
@@ -204,4 +204,20 @@ class ItemServiceImplTest {
         List<Item> actualList = itemService.getItemsByRequestId(1L);
         assertThat(actualList, equalTo(List.of(item)));
     }
+
+    @Test
+    void delete() {
+        when(repository.findById(Mockito.anyLong())).thenReturn(Optional.of(item));
+        itemService.delete(item.getId());
+        verify(repository).delete(item);
+    }
+
+    @Test
+    void delete_whenNoItem_thenThrowIllegalArgumentException() {
+        when(repository.findById(Mockito.anyLong())).thenReturn(Optional.empty());
+        Assertions.assertThrows(
+                IllegalArgumentException.class,
+                () -> itemService.delete(item.getId()));
+    }
+
 }
