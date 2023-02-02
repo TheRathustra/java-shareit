@@ -44,7 +44,7 @@ public class UserController {
 
     @PatchMapping("/{id}")
     @Transactional
-    public UserDto update(@PathVariable("id") Long id, @RequestBody @Valid UserDto userDto) {
+    public UserDto update(@PathVariable("id") Long id, @RequestBody UserDto userDto) {
         User user = UserDto.dtoToUser(userDto);
         User updatedUser = userService.update(id, user);
         return UserDto.userToDto(updatedUser);
