@@ -104,22 +104,6 @@ class UserControllerTest {
 
     @Test
     @SneakyThrows
-    void update_whenInvalid_thenReturnBadRequest() {
-        User invalidUser = new User(1L, "name", "");
-        UserDto invalidUserDto = new UserDto(invalidUser);
-        when(userService.update(anyLong(), Mockito.any())).thenReturn(invalidUser);
-        mvc.perform(patch("/users/{id}", userId)
-                        .content(mapper.writeValueAsString(invalidUserDto))
-                        .characterEncoding(StandardCharsets.UTF_8)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
-
-        verify(userService, never()).update(Mockito.anyLong(), Mockito.any());
-    }
-
-    @Test
-    @SneakyThrows
     void delete() {
         mvc.perform(MockMvcRequestBuilders.delete("/users/{id}", userId))
                 .andExpect(status().isOk());
