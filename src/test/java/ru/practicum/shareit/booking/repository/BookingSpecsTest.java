@@ -71,7 +71,15 @@ class BookingSpecsTest {
 
     @Test
     void byState() {
-        Specification<Booking> spec = BookingSpecs.byState(BookingState.ALL);
+        Specification<Booking> spec = BookingSpecs.byState(BookingState.PAST);
+        assertNotNull(spec);
+        spec = BookingSpecs.byState(BookingState.FUTURE);
+        assertNotNull(spec);
+        spec = BookingSpecs.byState(BookingState.CURRENT);
+        assertNotNull(spec);
+        spec = BookingSpecs.byState(BookingState.WAITING);
+        assertNotNull(spec);
+        spec = BookingSpecs.byState(BookingState.REJECTED);
         assertNotNull(spec);
     }
 }
