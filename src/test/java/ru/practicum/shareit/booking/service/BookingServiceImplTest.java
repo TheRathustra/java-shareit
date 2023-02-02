@@ -7,16 +7,22 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import ru.practicum.shareit.booking.error.ItemUnavailableException;
+import ru.practicum.shareit.booking.error.UpdateBookingException;
 import ru.practicum.shareit.booking.model.Booking;
+import ru.practicum.shareit.booking.model.BookingState;
 import ru.practicum.shareit.booking.model.BookingStatus;
 import ru.practicum.shareit.booking.repository.BookingRepository;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.ItemRepository;
+import ru.practicum.shareit.user.error.UndefinedUserException;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.service.UserService;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -138,26 +144,113 @@ class BookingServiceImplTest {
     }
 
     @Test
-    void approveBooking() {
+    void approveBooking_whenNotApprovedAndBookerEqualsUser_thenStatusCanceled() {
+        booking.setStatus(BookingStatus.WAITING);
+        booking.getItem().setOwner(user2);
+        when(repository.findById(Mockito.any())).thenReturn(Optional.of(booking));
+        when(repository.saveAndFlush(Mockito.any())).thenReturn(booking);
+
+        service.approveBooking(booking.getId(), false, user.getId());
+
+        assertThat(booking.getStatus(), equalTo(BookingStatus.CANCELED));
     }
 
     @Test
-    void getBookingsByState() {
+    void approveBooking_whenApprovedAndBookerNotEqualsUser_thenThrowIllegalArgumentException() {
+        booking.setStatus(BookingStatus.WAITING);
+        booking.getItem().setOwner(user2);
+        when(repository.findById(Mockito.any())).thenReturn(Optional.of(booking));
+
+        Assertions.assertThrows(
+                IllegalArgumentException.class,
+                () -> service.approveBooking(booking.getId(), true, user.getId()));
     }
 
     @Test
-    void getBookingsByOwner() {
+    void approveBooking_whenNotApprovedAndBookerNotEqualsUser_thenStatusApproved() {
+        booking.setStatus(BookingStatus.WAITING);
+        booking.setBooker(user2);
+        when(repository.findById(Mockito.any())).thenReturn(Optional.of(booking));
+        when(repository.saveAndFlush(Mockito.any())).thenReturn(booking);
+
+        service.approveBooking(booking.getId(), true, user.getId());
+
+        assertThat(booking.getStatus(), equalTo(BookingStatus.APPROVED));
     }
 
     @Test
-    void getLastBooking() {
+    void approveBooking_whenNotApprovedAndBookerNotEqualsUser_thenStatusRejected() {
+        booking.setStatus(BookingStatus.WAITING);
+        booking.setBooker(user2);
+        when(repository.findById(Mockito.any())).thenReturn(Optional.of(booking));
+        when(repository.saveAndFlush(Mockito.any())).thenReturn(booking);
+
+        service.approveBooking(booking.getId(), false, user.getId());
+
+        assertThat(booking.getStatus(), equalTo(BookingStatus.REJECTED));
     }
 
     @Test
-    void getNextBooking() {
+    void approveBooking_statusIsNotWaiting_thenThrowUpdateBookingException() {
+        booking.getItem().setOwner(user);
+        booking.setBooker(user2);
+        when(repository.findById(Mockito.any())).thenReturn(Optional.of(booking));
+
+        Assertions.assertThrows(
+                UpdateBookingException.class,
+                () -> service.approveBooking(booking.getId(), true, user.getId()));
+    }
+
+    @Test
+    void getBookingsByState_whenUserNotFound_thenThrowUndefinedUserException() {
+        when(userService.getUserById(Mockito.anyLong())).thenReturn(null);
+        Assertions.assertThrows(
+                UndefinedUserException.class,
+                () -> service.getBookingsByState(user.getId(), BookingState.ALL, null));
+    }
+
+    @Test
+    void getBookingsByState_whenValid_thenReturnListOfBooking() {
+        when(userService.getUserById(Mockito.anyLong())).thenReturn(user);
+        when(repository.findAll(Mockito.any(Specification.class), Mockito.any(Sort.class)))
+                .thenReturn(List.of(booking));
+
+        List<Booking> actualList = service.getBookingsByState(user.getId(), BookingState.ALL, null);
+        assertThat(actualList, equalTo(List.of(booking)));
+    }
+
+    @Test
+    void getBookingsByOwner_whenValid_thenReturnListOfBooking() {
+        when(userService.getUserById(Mockito.anyLong())).thenReturn(user);
+        when(repository.findAll(Mockito.any(Specification.class), Mockito.any(Sort.class)))
+                .thenReturn(List.of(booking));
+
+        List<Booking> actualList = service.getBookingsByOwner(user.getId(), BookingState.ALL, null);
+        assertThat(actualList, equalTo(List.of(booking)));
+
+    }
+
+    @Test
+    void getLastBooking_whenValid_thenReturnBooking() {
+        when(repository.findAll(Mockito.any(Specification.class), Mockito.any(Sort.class)))
+                .thenReturn(List.of(booking));
+        Booking actualBooking = service.getLastBooking(item.getId());
+        assertThat(actualBooking, equalTo(booking));
+    }
+
+    @Test
+    void getNextBooking_whenValid_thenReturnBooking() {
+        when(repository.findAll(Mockito.any(Specification.class), Mockito.any(Sort.class)))
+                .thenReturn(List.of(booking));
+        Booking actualBooking = service.getNextBooking(item.getId());
+        assertThat(actualBooking, equalTo(booking));
     }
 
     @Test
     void getBookingsByItemIdAndBookerInPast() {
+        when(repository.findAll(Mockito.any(Specification.class), Mockito.any(Sort.class)))
+                .thenReturn(List.of(booking));
+        List<Booking> actualList = service.getBookingsByItemIdAndBookerInPast(item.getId(), user.getId());
+        assertThat(actualList, equalTo(List.of(booking)));
     }
 }
