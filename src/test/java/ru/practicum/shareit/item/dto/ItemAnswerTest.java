@@ -6,8 +6,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.json.JsonTest;
 import org.springframework.boot.test.json.JacksonTester;
 import org.springframework.boot.test.json.JsonContent;
+import ru.practicum.shareit.item.comment.Comment;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.model.User;
+
+import java.time.LocalDateTime;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -33,9 +37,19 @@ class ItemAnswerTest {
 
     private final ItemAnswer itemAnswer = new ItemAnswer(item);
 
+    private final Comment comment = new Comment(
+            1L,
+            "test",
+            item,
+            user,
+            LocalDateTime.now()
+    );
+
     @Test
     @SneakyThrows
     void itemAnswerTestToJson() {
+        itemAnswer.setComments(List.of(comment));
+
         JsonContent<ItemAnswer> result = json.write(itemAnswer);
 
         assertThat(result).hasJsonPath("$.id");

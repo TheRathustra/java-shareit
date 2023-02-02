@@ -78,7 +78,7 @@ public class ItemAnswer {
     }
 
     @Data
-    private static class BookingDtoItem {
+    public static class BookingDtoItem {
         Long id;
         Long bookerId;
         Long itemId;

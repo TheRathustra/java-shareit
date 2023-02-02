@@ -29,13 +29,6 @@ public class CommentDTO {
         this.created = comment.getCreated();
     }
 
-    public static CommentDTO commentToDto(Comment comment) {
-        if (comment == null)
-            return null;
-
-        return new CommentDTO(comment);
-    }
-
     public static Comment dtoToComment(CommentDTO comment) {
         if (comment == null)
             return null;
