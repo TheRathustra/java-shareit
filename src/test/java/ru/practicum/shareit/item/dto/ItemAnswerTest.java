@@ -35,7 +35,7 @@ class ItemAnswerTest {
 
     @Test
     @SneakyThrows
-    void ItemAnswerTestToJson() {
+    void itemAnswerTestToJson() {
         JsonContent<ItemAnswer> result = json.write(itemAnswer);
 
         assertThat(result).hasJsonPath("$.id");

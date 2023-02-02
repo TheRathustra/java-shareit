@@ -48,7 +48,7 @@ class BookingAnswerTest {
 
     @Test
     @SneakyThrows
-    void BookingAnswerToJsonTest() {
+    void bookingAnswerToJsonTest() {
         JsonContent<BookingAnswer> result = json.write(bookingAnswer);
 
         assertThat(result).hasJsonPath("$.id");
