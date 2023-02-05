@@ -1,6 +1,6 @@
-package ru.practicum.shareit.server.global.util;
+package ru.practicum.shareit.gateway.global.util;
 
-import ru.practicum.shareit.server.global.error.InvalidPageSizeException;
+import ru.practicum.shareit.gateway.global.error.InvalidPageSizeException;
 
 public class Validator {
 

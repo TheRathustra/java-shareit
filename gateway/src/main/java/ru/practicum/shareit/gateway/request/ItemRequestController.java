@@ -3,6 +3,7 @@ package ru.practicum.shareit.gateway.request;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.shareit.gateway.global.util.Validator;
 import ru.practicum.shareit.gateway.request.client.RequestClient;
 import ru.practicum.shareit.gateway.request.dto.ItemRequestDto;
 
@@ -36,7 +37,7 @@ public class ItemRequestController {
     public ResponseEntity<Object> getAllItemRequests(@RequestHeader("X-Sharer-User-Id") long userId,
                                                      @PositiveOrZero @RequestParam(name = "from", required = false) Integer from,
                                                      @Positive @RequestParam(name = "size", required = false) Integer size) {
-
+        Validator.validatePageSize(from, size);
         return client.getAllItemRequests(userId, from, size);
 
     }

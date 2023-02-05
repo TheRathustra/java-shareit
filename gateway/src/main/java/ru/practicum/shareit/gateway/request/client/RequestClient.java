@@ -10,6 +10,7 @@ import org.springframework.web.util.DefaultUriBuilderFactory;
 import ru.practicum.shareit.gateway.client.BaseClient;
 import ru.practicum.shareit.gateway.request.dto.ItemRequestDto;
 
+import java.util.HashMap;
 import java.util.Map;
 
 @Service
@@ -36,10 +37,9 @@ public class RequestClient extends BaseClient {
     }
 
     public ResponseEntity<Object> getAllItemRequests(Long userId, Integer from, Integer size) {
-        Map<String, Object> parameters = Map.of(
-                "from", from,
-                "size", size
-        );
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("from", from);
+        parameters.put("size", size);
 
         return get("/all?from={from}&size={size}", userId, parameters);
     }

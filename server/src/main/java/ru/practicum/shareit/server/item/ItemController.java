@@ -13,6 +13,7 @@ import ru.practicum.shareit.server.item.dto.ItemDto;
 import ru.practicum.shareit.server.item.model.Item;
 import ru.practicum.shareit.server.item.service.ItemService;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
@@ -47,6 +48,10 @@ public class ItemController {
     public List<ItemDto> getItemsByText(@RequestParam(name = "text", required = false) String text,
                                         @RequestParam(name = "from", required = false) Integer from,
                                         @RequestParam(name = "size", required = false) Integer size) {
+
+        if (text == null || text.isBlank()) {
+            return Collections.emptyList();
+        }
 
         Pageable pageRequest = Utils.getPageRequest(from, size);
         text = text.toUpperCase(Locale.ROOT).trim();

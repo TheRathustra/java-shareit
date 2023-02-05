@@ -11,6 +11,7 @@ import ru.practicum.shareit.gateway.booking.dto.BookingDto;
 import ru.practicum.shareit.gateway.booking.model.BookingState;
 import ru.practicum.shareit.gateway.client.BaseClient;
 
+import java.util.HashMap;
 import java.util.Map;
 
 @Service
@@ -33,7 +34,10 @@ public class BookingClient extends BaseClient {
 
     public ResponseEntity<Object> update(Long userId, Long bookingId, Boolean approved) {
         String path = "/" + bookingId + "?approved=" + approved;
-        return patch(path, userId);
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("approved", approved);
+
+        return patch(path, userId, parameters);
     }
 
     public ResponseEntity<Object> getBooking(Long userId, Long bookingId) {
@@ -41,20 +45,20 @@ public class BookingClient extends BaseClient {
     }
 
     public ResponseEntity<Object> getBookings(Long userId, BookingState state, Integer from, Integer size) {
-        Map<String, Object> parameters = Map.of(
-                "state", state.name(),
-                "from", from,
-                "size", size
-        );
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("state", state.name());
+        parameters.put("from", from);
+        parameters.put("size", size);
+
         return get("?state={state}&from={from}&size={size}", userId, parameters);
     }
 
     public ResponseEntity<Object> getBookingsOwner(Long userId, BookingState state, Integer from, Integer size) {
-        Map<String, Object> parameters = Map.of(
-                "state", state.name(),
-                "from", from,
-                "size", size
-        );
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("state", state.name());
+        parameters.put("from", from);
+        parameters.put("size", size);
+
         return get("/owner?state={state}&from={from}&size={size}", userId, parameters);
     }
 

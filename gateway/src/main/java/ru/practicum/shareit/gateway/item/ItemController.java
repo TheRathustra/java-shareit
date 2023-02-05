@@ -50,11 +50,12 @@ public class ItemController {
     }
 
     @GetMapping("/search")
-    public ResponseEntity<Object> getItemsByText(@RequestParam String text,
-                                        @PositiveOrZero @RequestParam(name = "from", required = false) Integer from,
-                                        @Positive @RequestParam(name = "size", required = false) Integer size) {
+    public ResponseEntity<Object> getItemsByText(@RequestHeader("X-Sharer-User-Id") long userId,
+                                                 @RequestParam(name = "text", defaultValue = "") String text,
+                                                 @PositiveOrZero @RequestParam(name = "from", required = false) Integer from,
+                                                 @Positive @RequestParam(name = "size", required = false) Integer size) {
 
-        return client.getItemsByText(text, from, size);
+        return client.getItemsByText(text, userId, from, size);
     }
 
     @PostMapping("{itemId}/comment")

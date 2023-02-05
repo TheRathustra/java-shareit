@@ -13,7 +13,6 @@ import ru.practicum.shareit.server.booking.service.BookingService;
 import ru.practicum.shareit.server.global.util.Utils;
 
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestController
@@ -29,28 +28,29 @@ public class BookingController {
 
     @PostMapping()
     @Transactional
-    public BookingAnswer create(@RequestHeader Map<String, String> headers,
+    public BookingAnswer create(@RequestHeader("X-Sharer-User-Id") long userId,
                                 @RequestBody BookingDto bookingDto) {
         BookingDto.validate(bookingDto);
 
         Booking booking = BookingDto.dtoToBooking(bookingDto);
 
         Long itemId = bookingDto.getItemId();
-        Long userId = Utils.getUserFromHeaders(headers);
         Booking newBooking = service.add(booking, userId, itemId);
         return BookingAnswer.bookingAnswer(newBooking);
     }
 
     @PatchMapping("/{bookingId}")
     @Transactional
-    public BookingAnswer approveBooking(@RequestHeader("X-Sharer-User-Id") long userId, @PathVariable("bookingId") Long bookingId,
+    public BookingAnswer approveBooking(@RequestHeader("X-Sharer-User-Id") long userId,
+                                        @PathVariable("bookingId") Long bookingId,
                                         @RequestParam("approved") Boolean approved) {
         Booking booking = service.approveBooking(bookingId, approved, userId);
         return BookingAnswer.bookingAnswer(booking);
     }
 
     @GetMapping("/{bookingId}")
-    public BookingAnswer getBooking(@RequestHeader("X-Sharer-User-Id") long userId, @PathVariable("bookingId") Long bookingId) {
+    public BookingAnswer getBooking(@RequestHeader("X-Sharer-User-Id") long userId,
+                                    @PathVariable("bookingId") Long bookingId) {
         Booking booking = service.getById(bookingId, userId);
         return BookingAnswer.bookingAnswer(booking);
     }
