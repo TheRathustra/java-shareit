@@ -1,12 +1,12 @@
 package ru.practicum.shareit.gateway.user;
 
-import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.gateway.user.client.UserClient;
 import ru.practicum.shareit.gateway.user.dto.UserDto;
+
+import javax.validation.Valid;
 
 @RestController
 @RequestMapping(path = "/users")
@@ -20,33 +20,26 @@ public class UserController {
     }
 
     @PostMapping
-    @Transactional
     public ResponseEntity<Object> create(@RequestBody @Valid UserDto userDto) {
-        ResponseEntity<Object> newUser = client.create(userDto);
-        return newUser;
+        return client.create(userDto);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Object> getUserById(@PathVariable("id") Long id) {
-        ResponseEntity<Object> user = client.getUserById(id);
-        return user;
+        return client.getUserById(id);
     }
 
     @GetMapping
     public ResponseEntity<Object> getUsers() {
-        ResponseEntity<Object> users = client.getUsers();
-        return users;
+        return client.getUsers();
     }
 
     @PatchMapping("/{id}")
-    @Transactional
     public  ResponseEntity<Object> update(@PathVariable("id") Long id, @RequestBody UserDto userDto) {
-        ResponseEntity<Object> updatedUser = client.update(id, userDto);
-        return updatedUser;
+        return client.update(id, userDto);
     }
 
     @DeleteMapping("/{id}")
-    @Transactional
     public void delete(@PathVariable("id") Long id) {
         client.delete(id);
     }

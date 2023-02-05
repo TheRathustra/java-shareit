@@ -1,16 +1,16 @@
 package ru.practicum.shareit.gateway.booking;
 
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.Positive;
-import jakarta.validation.constraints.PositiveOrZero;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.gateway.booking.client.BookingClient;
 import ru.practicum.shareit.gateway.booking.dto.BookingDto;
 import ru.practicum.shareit.gateway.booking.error.UnknownStateException;
 import ru.practicum.shareit.gateway.booking.model.BookingState;
+
+import javax.validation.Valid;
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
 
 @RestController
 @RequestMapping(path = "/bookings")
@@ -24,29 +24,23 @@ public class BookingController {
     }
 
     @PostMapping()
-    @Transactional
     public ResponseEntity<Object> create(@RequestHeader("X-Sharer-User-Id") long userId,
                                 @RequestBody @Valid BookingDto bookingDto) {
         BookingDto.validate(bookingDto);
-
-        ResponseEntity<Object> newBooking = client.create(userId, bookingDto);
-        return newBooking;
+        return client.create(userId, bookingDto);
     }
 
     @PatchMapping("/{bookingId}")
-    @Transactional
     public ResponseEntity<Object> update(@PathVariable("bookingId") Long bookingId,
                                         @RequestHeader("X-Sharer-User-Id") long userId,
                                         @RequestParam("approved") Boolean approved) {
 
-        ResponseEntity<Object> booking = client.update(userId, bookingId, approved);
-        return booking;
+        return client.update(userId, bookingId, approved);
     }
 
     @GetMapping("/{bookingId}")
     public ResponseEntity<Object> getBooking(@RequestHeader("X-Sharer-User-Id") long userId, @PathVariable("bookingId") Long bookingId) {
-        ResponseEntity<Object> booking = client.getBooking(userId, bookingId);
-        return booking;
+        return client.getBooking(userId, bookingId);
     }
 
     @GetMapping()
@@ -58,8 +52,7 @@ public class BookingController {
         BookingState state = BookingState.from(stateDTO)
                 .orElseThrow(() -> new UnknownStateException("Unknown state: " + stateDTO));
 
-        ResponseEntity<Object> bookings = client.getBookings(userId, state, from, size);
-        return bookings;
+        return client.getBookings(userId, state, from, size);
     }
 
     @GetMapping("/owner")
@@ -71,8 +64,7 @@ public class BookingController {
         BookingState state = BookingState.from(stateDTO)
                 .orElseThrow(() -> new UnknownStateException("Unknown state: " + stateDTO));
 
-        ResponseEntity<Object> bookings = client.getBookingsOwner(userId, state, from, size);
-        return bookings;
+        return client.getBookingsOwner(userId, state, from, size);
     }
 
 }

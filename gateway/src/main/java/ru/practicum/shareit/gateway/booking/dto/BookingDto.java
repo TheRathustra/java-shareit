@@ -1,12 +1,12 @@
 package ru.practicum.shareit.gateway.booking.dto;
 
-import jakarta.validation.constraints.FutureOrPresent;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import ru.practicum.shareit.gateway.booking.error.InvalidBookingException;
 import ru.practicum.shareit.gateway.booking.model.BookingStatus;
 
+import javax.validation.constraints.FutureOrPresent;
 import java.time.LocalDateTime;
 
 @Data
