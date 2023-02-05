@@ -18,7 +18,7 @@ public class UserErrorHandler {
     }
 
     @ExceptionHandler
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
     public Map<String, String> handleUndefinedUserException(final UndefinedUserException e) {
         return Map.of("error", "UndefinedUserException", "errorMessage", e.getMessage() != null ? e.getMessage() : "");
     }
