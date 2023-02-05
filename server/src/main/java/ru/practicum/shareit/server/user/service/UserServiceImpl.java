@@ -2,7 +2,6 @@ package ru.practicum.shareit.server.user.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.practicum.shareit.server.user.error.UndefinedUserException;
 import ru.practicum.shareit.server.user.model.User;
 import ru.practicum.shareit.server.user.repository.UserRepository;
 
@@ -49,7 +48,7 @@ public class UserServiceImpl implements UserService {
         Optional<User> userOptional = userRepository.findById(id);
 
         if (userOptional.isEmpty())
-            throw new UndefinedUserException("Пользователь с ID=" + id + " не найден!");
+            throw new IllegalArgumentException("Пользователь с ID=" + id + " не найден!");
 
         return userOptional.get();
     }
