@@ -9,7 +9,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.dao.DataIntegrityViolationException;
-import ru.practicum.shareit.server.user.error.UndefinedUserException;
 import ru.practicum.shareit.server.user.model.User;
 import ru.practicum.shareit.server.user.repository.UserRepository;
 
@@ -18,7 +17,8 @@ import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class UserServiceImplTest {
@@ -44,8 +44,8 @@ class UserServiceImplTest {
     void getUserById_whenUserNotFound_ThenThrowIllegalArgumentException() {
         when(userRepository.findById(-1L))
                 .thenReturn(Optional.empty());
-        final UndefinedUserException exception = Assertions.assertThrows(
-                UndefinedUserException.class,
+        final IllegalArgumentException exception = Assertions.assertThrows(
+                IllegalArgumentException.class,
                 () -> userService.getUserById(-1L));
         Assertions.assertEquals("Пользователь с ID=-1 не найден!", exception.getMessage());
     }
