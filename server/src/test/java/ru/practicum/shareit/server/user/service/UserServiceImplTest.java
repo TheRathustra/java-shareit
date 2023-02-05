@@ -9,6 +9,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.dao.DataIntegrityViolationException;
+import ru.practicum.shareit.server.user.error.UndefinedUserException;
 import ru.practicum.shareit.server.user.model.User;
 import ru.practicum.shareit.server.user.repository.UserRepository;
 
@@ -43,8 +44,8 @@ class UserServiceImplTest {
     void getUserById_whenUserNotFound_ThenThrowIllegalArgumentException() {
         when(userRepository.findById(-1L))
                 .thenReturn(Optional.empty());
-        final IllegalArgumentException exception = Assertions.assertThrows(
-                IllegalArgumentException.class,
+        final UndefinedUserException exception = Assertions.assertThrows(
+                UndefinedUserException.class,
                 () -> userService.getUserById(-1L));
         Assertions.assertEquals("Пользователь с ID=-1 не найден!", exception.getMessage());
     }
