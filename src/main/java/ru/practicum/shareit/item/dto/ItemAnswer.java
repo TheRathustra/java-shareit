@@ -5,7 +5,6 @@ import lombok.NoArgsConstructor;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.item.comment.Comment;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.request.ItemRequest;
 import ru.practicum.shareit.user.model.User;
 
 import java.time.LocalDateTime;
@@ -22,7 +21,7 @@ public class ItemAnswer {
     private String description;
     private Boolean available;
     private UserDtoItem owner;
-    private ItemRequestDtoItem request;
+    private Long requestId;
     private BookingDtoItem lastBooking;
     private BookingDtoItem nextBooking;
     private List<CommentDtoItem> comments;
@@ -33,7 +32,7 @@ public class ItemAnswer {
         this.description = item.getDescription();
         this.available = item.getAvailable();
         this.owner = UserDtoItem.userToDTO(item.getOwner());
-        this.request = ItemRequestDtoItem.itemRequestToDTO(item.getRequest());
+        this.requestId = item.getRequestId();
         this.comments = new ArrayList<>();
     }
 
@@ -46,13 +45,11 @@ public class ItemAnswer {
     }
 
     public void setLastBooking(Booking lastBooking) {
-        BookingDtoItem dto = BookingDtoItem.bookingToDTO(lastBooking);
-        this.lastBooking = dto;
+        this.lastBooking = BookingDtoItem.bookingToDTO(lastBooking);
     }
 
     public void setNextBooking(Booking nextBooking) {
-        BookingDtoItem dto = BookingDtoItem.bookingToDTO(nextBooking);
-        this.nextBooking = dto;
+        this.nextBooking = BookingDtoItem.bookingToDTO(nextBooking);
     }
 
     public static ItemAnswer itemToAnswerDTO(Item item) {
@@ -81,27 +78,7 @@ public class ItemAnswer {
     }
 
     @Data
-    private static class ItemRequestDtoItem {
-        private Long id;
-
-        private String description;
-
-        private UserDtoItem requestor;
-
-        public static ItemRequestDtoItem itemRequestToDTO(ItemRequest itemRequest) {
-            if (itemRequest == null)
-                return null;
-
-            ItemRequestDtoItem dto = new ItemRequestDtoItem();
-            dto.setId(itemRequest.getId());
-            dto.setDescription(itemRequest.getDescription());
-            dto.setRequestor(UserDtoItem.userToDTO(itemRequest.getRequestor()));
-            return dto;
-        }
-    }
-
-    @Data
-    private static class BookingDtoItem {
+    public static class BookingDtoItem {
         Long id;
         Long bookerId;
         Long itemId;

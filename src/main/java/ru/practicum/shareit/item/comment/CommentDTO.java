@@ -1,5 +1,6 @@
 package ru.practicum.shareit.item.comment;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import ru.practicum.shareit.item.model.Item;
@@ -10,6 +11,7 @@ import java.time.LocalDateTime;
 
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
 public class CommentDTO {
     private Long id;
 
@@ -25,13 +27,6 @@ public class CommentDTO {
         this.item = ItemDtoComment.itemToDTO(comment.getItem());
         this.author = UserDtoComment.userToDTO(comment.getAuthor());
         this.created = comment.getCreated();
-    }
-
-    public static CommentDTO commentToDto(Comment comment) {
-        if (comment == null)
-            return null;
-
-        return new CommentDTO(comment);
     }
 
     public static Comment dtoToComment(CommentDTO comment) {

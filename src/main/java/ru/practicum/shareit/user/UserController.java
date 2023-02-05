@@ -5,6 +5,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.model.User;
+import ru.practicum.shareit.user.service.UserService;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -22,7 +23,7 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public UserDto getUserById(@PathVariable("id") long id) {
+    public UserDto getUserById(@PathVariable("id") Long id) {
         User user = userService.getUserById(id);
         return UserDto.userToDto(user);
     }
@@ -43,7 +44,7 @@ public class UserController {
 
     @PatchMapping("/{id}")
     @Transactional
-    public UserDto update(@PathVariable("id") long id, @RequestBody UserDto userDto) {
+    public UserDto update(@PathVariable("id") Long id, @RequestBody UserDto userDto) {
         User user = UserDto.dtoToUser(userDto);
         User updatedUser = userService.update(id, user);
         return UserDto.userToDto(updatedUser);
@@ -51,7 +52,7 @@ public class UserController {
 
     @DeleteMapping("/{id}")
     @Transactional
-    public void delete(@PathVariable("id") long id) {
+    public void delete(@PathVariable("id") Long id) {
         userService.delete(id);
     }
 
