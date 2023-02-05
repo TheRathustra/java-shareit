@@ -16,4 +16,10 @@ public class UserErrorHandler {
     public Map<String, String> handleIllegalArgumentException(final IllegalArgumentException e) {
         return Map.of("error", "IllegalArgumentException", "errorMessage", e.getMessage() != null ? e.getMessage() : "");
     }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public Map<String, String> handleUndefinedUserException(final UndefinedUserException e) {
+        return Map.of("error", "UndefinedUserException", "errorMessage", e.getMessage() != null ? e.getMessage() : "");
+    }
 }
