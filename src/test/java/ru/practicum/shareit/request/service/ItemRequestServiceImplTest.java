@@ -75,7 +75,6 @@ class ItemRequestServiceImplTest {
     void getItemRequests() {
         when(userService.getUserById(Mockito.anyLong())).thenReturn(user);
         when(repository.findAllByRequestorId(Mockito.anyLong())).thenReturn(List.of(request));
-        when(itemService.getItemsByRequestId(Mockito.anyLong())).thenReturn(List.of(item));
 
         List<ItemRequest> actualRequests = service.getItemRequests(user.getId());
         assertThat(actualRequests, equalTo(List.of(request)));
@@ -85,7 +84,6 @@ class ItemRequestServiceImplTest {
     void getItemRequestById_whenRequestIsFound_thenReturnItemRequest() {
         when(userService.getUserById(Mockito.anyLong())).thenReturn(user);
         when(repository.findById(Mockito.anyLong())).thenReturn(Optional.of(request));
-        when(itemService.getItemsByRequestId(Mockito.anyLong())).thenReturn(List.of(item));
         ItemRequest actualRequest = service.getItemRequestById(user.getId(), request.getId());
         assertThat(actualRequest, equalTo(request));
     }
@@ -102,9 +100,7 @@ class ItemRequestServiceImplTest {
 
     @Test
     void getAllItemRequests() {
-        when(itemService.getItemsByRequestId(Mockito.anyLong())).thenReturn(List.of(item));
-        when(repository.findAllByRequestorIdNot(Mockito.anyLong(), Mockito.any()))
-                .thenReturn(List.of(request));
+        when(repository.findAllByRequestorIdNot(Mockito.anyLong(), Mockito.any())).thenReturn(List.of(request));
         List<ItemRequest> actualRequests = service.getAllItemRequests(user.getId(), null);
         assertThat(actualRequests, equalTo(List.of(request)));
     }

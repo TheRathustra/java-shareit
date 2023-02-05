@@ -25,7 +25,7 @@ public class ItemRequest {
     @Column(name = "description", nullable = false)
     private String description;
 
-    @ManyToOne()
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "requestor_id", referencedColumnName = "id")
     private User requestor;
 
@@ -33,7 +33,8 @@ public class ItemRequest {
     @CreationTimestamp
     private LocalDateTime created;
 
-    @Transient
+    @OneToMany(fetch = FetchType.EAGER)
+    @JoinColumn(name = "request_id", referencedColumnName = "id")
     private List<Item> items;
 
 }
